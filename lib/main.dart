@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ukk_flutter/transaksi.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://fhdchhzmjajsyloogyvd.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZoZGNoaHptamFqc3lsb29neXZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE1NTI5MDYsImV4cCI6MjA0NzEyODkwNn0.Ll3x7fBm2G5NhXZ3EA80sJQIj0VWb8RUJ00AAMjQWWk');
   runApp(const MyApp());
 }
 

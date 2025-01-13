@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Transaction extends StatefulWidget {
   const Transaction({super.key});
@@ -12,22 +13,90 @@ class Transaction extends StatefulWidget {
 
 class _TransactionState extends State<Transaction> {
   final _pageControl = PageController();
+  var response;
+  var produk;
   int selectedIndex = 0;
+  var jenis = [
+    null,
+    'makanan',
+    'minuman',
+    'lainnya',
+  ];
+  var warnaBarItem = [
+    Color.fromARGB(255, 160, 51, 250),
+    Colors.red,
+    Colors.blue,
+    Colors.black
+  ];
+  void fetchProduct([String? filter]) async {
+    if (filter == null) {
+      response = await Supabase.instance.client.from('produk').select();
+    } else {
+      response = await Supabase.instance.client
+          .from('produk')
+          .select()
+          .eq('jenis', filter);
+    }
+    setState(() {
+      produk = response;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProduct();
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    GridView generateCard([int? length]) {
+    GridView generateCard() {
       return GridView.count(
         padding: EdgeInsets.all(15),
-        crossAxisCount: MediaQuery.of(context).size.width >= 600 ? 4 : 2,
+        // crossAxisCount: MediaQuery.of(context).size.width >= 600 ? 4 : 2,
+        crossAxisCount: 1,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
-        childAspectRatio: 0.8,
+        childAspectRatio: 5,
         children: [
-          ...List.generate(length ?? 5, (index) {
+          ...List.generate(produk.length, (index) {
+            Color warnaLingkaran;
+
+            if (produk[index]['jenis'] == 'makanan') {
+              warnaLingkaran = Colors.red;
+            } else if (produk[index]['jenis'] == 'minuman') {
+              warnaLingkaran = Colors.blue;
+            } else {
+              warnaLingkaran = Colors.black;
+            }
             return Card(
               elevation: 10,
+              child: LayoutBuilder(builder: (context, constraint) {
+                return Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Row(children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('${produk[index]["Nama"]}'),
+                        Text('Sisa stok:${produk[index]["Stok"]}'),
+                        Text('${produk[index]["Harga"]}'),
+                      ],
+                    ),
+                    const Spacer(),
+                    Container(
+                      height: constraint.maxHeight * 0.2,
+                      width: constraint.maxHeight * 0.2,
+                      decoration: BoxDecoration(
+                          color: warnaLingkaran,
+                          borderRadius: BorderRadius.circular(500)),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    )
+                  ]),
+                );
+              }),
             );
           })
         ],
@@ -64,37 +133,42 @@ class _TransactionState extends State<Transaction> {
           foregroundColor: Colors.white,
           backgroundColor: Color.fromARGB(255, 160, 51, 250),
         ),
-        body: Column(children: [
-          SlidingClippedNavBar(
-            backgroundColor: Color.fromARGB(255, 254, 255, 224),
-            barItems: [
-              BarItem(title: 'All', icon: Icons.apps),
-              BarItem(title: 'Food', icon: FontAwesomeIcons.burger),
-              BarItem(title: 'Drinks', icon: Icons.local_bar),
-              BarItem(title: 'Others', icon: FontAwesomeIcons.ellipsis)
-            ],
-            selectedIndex: selectedIndex,
-            onButtonPressed: (index) {
-              setState(() {
-                selectedIndex = index;
-                _pageControl.animateToPage(selectedIndex,
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeOut);
-              });
-            },
-            activeColor: Colors.purple.shade500,
-            inactiveColor: Colors.grey.shade600,
-          ),
-          Expanded(
-              child: PageView(
-            controller: _pageControl,
-            children: [
-              generateCard(),
-              generateCard(10),
-              generateCard(7),
-              generateCard(3)
-            ],
-          ))
-        ]));
+        body: produk == null
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(children: [
+                SlidingClippedNavBar(
+                  backgroundColor: Color.fromARGB(255, 254, 255, 224),
+                  barItems: [
+                    BarItem(title: 'All', icon: Icons.apps),
+                    BarItem(title: 'Food', icon: FontAwesomeIcons.burger),
+                    BarItem(title: 'Drinks', icon: Icons.local_bar),
+                    BarItem(title: 'Others', icon: FontAwesomeIcons.ellipsis)
+                  ],
+                  selectedIndex: selectedIndex,
+                  onButtonPressed: (index) {
+                    setState(() {
+                      fetchProduct(jenis[index]);
+                      selectedIndex = index;
+                      _pageControl.animateToPage(selectedIndex,
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeOut);
+                    });
+                  },
+                  activeColor: warnaBarItem[selectedIndex],
+                  inactiveColor: Colors.grey.shade600,
+                ),
+                Expanded(
+                    child: PageView(
+                  controller: _pageControl,
+                  children: [
+                    generateCard(),
+                    generateCard(),
+                    generateCard(),
+                    generateCard()
+                  ],
+                ))
+              ]));
   }
 }
