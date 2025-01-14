@@ -14,8 +14,10 @@ class Transaction extends StatefulWidget {
 class _TransactionState extends State<Transaction> {
   final _pageControl = PageController();
   var response;
-  var produk;
+
+  List produk = [];
   int selectedIndex = 0;
+
   var jenis = [
     null,
     'makanan',
@@ -23,20 +25,14 @@ class _TransactionState extends State<Transaction> {
     'lainnya',
   ];
   var warnaBarItem = [
-    Color.fromARGB(255, 160, 51, 250),
+    const Color.fromARGB(255, 160, 51, 250),
     Colors.red,
     Colors.blue,
     Colors.black
   ];
-  void fetchProduct([String? filter]) async {
-    if (filter == null) {
-      response = await Supabase.instance.client.from('produk').select();
-    } else {
-      response = await Supabase.instance.client
-          .from('produk')
-          .select()
-          .eq('jenis', filter);
-    }
+  Future<void> fetchProduct() async {
+    response = await Supabase.instance.client.from('produk').select();
+
     setState(() {
       produk = response;
     });
@@ -50,21 +46,31 @@ class _TransactionState extends State<Transaction> {
 
   @override
   Widget build(BuildContext context) {
-    GridView generateCard() {
+    GridView generateCard([String? filter]) {
+      dynamic data;
+
+      setState(() {
+        if (filter == null) {
+          data = produk;
+        } else {
+          data = produk.where((item) => item["jenis"] == filter).toList();
+        }
+      });
+
       return GridView.count(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         // crossAxisCount: MediaQuery.of(context).size.width >= 600 ? 4 : 2,
         crossAxisCount: 1,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
         childAspectRatio: 5,
         children: [
-          ...List.generate(produk.length, (index) {
+          ...List.generate(data.length, (index) {
             Color warnaLingkaran;
 
-            if (produk[index]['jenis'] == 'makanan') {
+            if (data[index]['jenis'] == 'makanan') {
               warnaLingkaran = Colors.red;
-            } else if (produk[index]['jenis'] == 'minuman') {
+            } else if (data[index]['jenis'] == 'minuman') {
               warnaLingkaran = Colors.blue;
             } else {
               warnaLingkaran = Colors.black;
@@ -73,14 +79,15 @@ class _TransactionState extends State<Transaction> {
               elevation: 10,
               child: LayoutBuilder(builder: (context, constraint) {
                 return Padding(
-                  padding: EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(5),
                   child: Row(children: [
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('${produk[index]["Nama"]}'),
-                        Text('Sisa stok:${produk[index]["Stok"]}'),
-                        Text('${produk[index]["Harga"]}'),
+                        // Text('$data')
+                        Text('${data[index]["Nama"]}'),
+                        Text('Sisa stok:${data[index]["Stok"]}'),
+                        Text('${data[index]["Harga"]}'),
                       ],
                     ),
                     const Spacer(),
@@ -91,7 +98,7 @@ class _TransactionState extends State<Transaction> {
                           color: warnaLingkaran,
                           borderRadius: BorderRadius.circular(500)),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     )
                   ]),
@@ -108,11 +115,11 @@ class _TransactionState extends State<Transaction> {
         appBar: AppBar(
           centerTitle: true,
           title: Container(
-            padding: EdgeInsets.only(right: 5),
+            padding: const EdgeInsets.only(right: 5),
             height: kToolbarHeight / 1.4,
             width: MediaQuery.of(context).size.width / 2.5,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(25)),
+                borderRadius: const BorderRadius.all(Radius.circular(25)),
                 border: Border.all(width: 2, color: Colors.white)),
             child: TextField(
               style: GoogleFonts.inter(color: Colors.white),
@@ -120,26 +127,26 @@ class _TransactionState extends State<Transaction> {
               decoration: InputDecoration(
                   hintText: 'Cari barang',
                   hintStyle: GoogleFonts.inter(color: Colors.white),
-                  border: OutlineInputBorder(borderSide: BorderSide.none),
-                  prefixIcon: Icon(
+                  border: const OutlineInputBorder(borderSide: BorderSide.none),
+                  prefixIcon: const Icon(
                     Icons.search,
                     color: Colors.white,
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10)),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10)),
             ),
           ),
 
           // ),
           foregroundColor: Colors.white,
-          backgroundColor: Color.fromARGB(255, 160, 51, 250),
+          backgroundColor: const Color.fromARGB(255, 160, 51, 250),
         ),
-        body: produk == null
-            ? Center(
+        body: produk == []
+            ? const Center(
                 child: CircularProgressIndicator(),
               )
             : Column(children: [
                 SlidingClippedNavBar(
-                  backgroundColor: Color.fromARGB(255, 254, 255, 224),
+                  backgroundColor: const Color.fromARGB(255, 254, 255, 224),
                   barItems: [
                     BarItem(title: 'All', icon: Icons.apps),
                     BarItem(title: 'Food', icon: FontAwesomeIcons.burger),
@@ -148,11 +155,11 @@ class _TransactionState extends State<Transaction> {
                   ],
                   selectedIndex: selectedIndex,
                   onButtonPressed: (index) {
+                    // fetchProduct(jenis[index]);
                     setState(() {
-                      fetchProduct(jenis[index]);
                       selectedIndex = index;
                       _pageControl.animateToPage(selectedIndex,
-                          duration: Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 300),
                           curve: Curves.easeOut);
                     });
                   },
@@ -164,9 +171,9 @@ class _TransactionState extends State<Transaction> {
                   controller: _pageControl,
                   children: [
                     generateCard(),
-                    generateCard(),
-                    generateCard(),
-                    generateCard()
+                    generateCard('makanan'),
+                    generateCard('minuman'),
+                    generateCard('lainnya')
                   ],
                 ))
               ]));

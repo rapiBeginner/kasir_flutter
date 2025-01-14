@@ -116,18 +116,23 @@ class _MyHomePageState extends State<MyHomePage> {
                                     boxShadow: [
                                       BoxShadow(
                                           blurRadius: 30,
-                                          offset: Offset(0, 10),
+                                          offset: const Offset(0, 10),
                                           color: Colors.purple.shade200)
                                     ]),
                                 child: Column(
                                   children: [
                                     Container(
-                                      padding: EdgeInsets.all(12),
+                                      padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
                                                   color:
                                                       Colors.purple.shade200))),
+                                      // color: Colors.blue,
+                                      height:
+                                          MediaQuery.of(context).size.height /
+                                              5 /
+                                              2,
                                       child: Center(
                                         child: TextField(
                                           textAlignVertical: TextAlignVertical.top,
@@ -148,14 +153,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                               border: InputBorder.none),
                                         ),
                                       ),
-                                      // color: Colors.blue,
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.only(left: 12),
+                                      // color: Colors.red,
                                       height:
                                           MediaQuery.of(context).size.height /
                                               5 /
                                               2,
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.only(left: 12),
                                       child: Center(
                                         child: TextField(
                                           style: GoogleFonts.lato(
@@ -175,11 +180,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                               border: InputBorder.none),
                                         ),
                                       ),
-                                      // color: Colors.red,
-                                      height:
-                                          MediaQuery.of(context).size.height /
-                                              5 /
-                                              2,
                                     )
                                   ],
                                 )),
@@ -194,6 +194,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                         builder: (context) =>
                                             const Transaction()));
                               },
+                              style: ElevatedButton.styleFrom(
+                                  elevation: 20,
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 189, 114, 251),
+                                  foregroundColor: Colors.white,
+                                  fixedSize: Size(
+                                      MediaQuery.of(context).size.width / 1.5,
+                                      MediaQuery.of(context).size.height / 15)),
                               child: Text(
                                 'Login',
                                 style: GoogleFonts.lato(
@@ -201,14 +209,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                       MediaQuery.of(context).size.height / 35,
                                 ),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                  elevation: 20,
-                                  backgroundColor:
-                                      Color.fromARGB(255, 189, 114, 251),
-                                  foregroundColor: Colors.white,
-                                  fixedSize: Size(
-                                      MediaQuery.of(context).size.width / 1.5,
-                                      MediaQuery.of(context).size.height / 15)),
                             ),
                             SizedBox(
                               height: MediaQuery.of(context).size.height / 30,
@@ -229,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     'Register here',
                                     style: GoogleFonts.lato(
                                         decorationColor:
-                                            Color.fromARGB(255, 189, 114, 251),
+                                            const Color.fromARGB(255, 189, 114, 251),
                                         decoration: TextDecoration.underline,
                                         fontSize:
                                             MediaQuery.of(context).size.height /
