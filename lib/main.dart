@@ -143,8 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   40),
                                           decoration: InputDecoration(
                                             
-                                              hintText: 'Email',
-                                              hintStyle: GoogleFonts.lato(
+                                              labelText: 'Email',
+                                              labelStyle: GoogleFonts.lato(
                                                   fontSize:
                                                       MediaQuery.of(context)
                                                               .size
@@ -170,8 +170,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   40),
                                           obscureText: true,
                                           decoration: InputDecoration(
-                                              hintText: 'Password',
-                                              hintStyle: GoogleFonts.lato(
+                                              labelText: 'Password',
+                                              labelStyle: GoogleFonts.lato(
                                                   fontSize:
                                                       MediaQuery.of(context)
                                                               .size

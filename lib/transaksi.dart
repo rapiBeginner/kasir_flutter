@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ukk_flutter/createProduk.dart';
 
 class Transaction extends StatefulWidget {
   const Transaction({super.key});
@@ -49,13 +50,11 @@ class _TransactionState extends State<Transaction> {
     GridView generateCard([String? filter]) {
       dynamic data;
 
-      setState(() {
-        if (filter == null) {
-          data = produk;
-        } else {
-          data = produk.where((item) => item["jenis"] == filter).toList();
-        }
-      });
+      if (filter == null) {
+        data = produk;
+      } else {
+        data = produk.where((item) => item["jenis"] == filter).toList();
+      }
 
       return GridView.count(
         padding: const EdgeInsets.all(15),
@@ -63,17 +62,17 @@ class _TransactionState extends State<Transaction> {
         crossAxisCount: 1,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
-        childAspectRatio: 5,
+        childAspectRatio: 3.5,
         children: [
           ...List.generate(data.length, (index) {
-            Color warnaLingkaran;
-
+            IconData iconJenis;
+            Color warnaIcon;
             if (data[index]['jenis'] == 'makanan') {
-              warnaLingkaran = Colors.red;
+             iconJenis = FontAwesomeIcons.burger;
             } else if (data[index]['jenis'] == 'minuman') {
-              warnaLingkaran = Colors.blue;
+             iconJenis = Icons.local_bar;
             } else {
-              warnaLingkaran = Colors.black;
+             iconJenis = FontAwesomeIcons.ellipsis;
             }
             return Card(
               elevation: 10,
@@ -91,13 +90,8 @@ class _TransactionState extends State<Transaction> {
                       ],
                     ),
                     const Spacer(),
-                    Container(
-                      height: constraint.maxHeight * 0.2,
-                      width: constraint.maxHeight * 0.2,
-                      decoration: BoxDecoration(
-                          color: warnaLingkaran,
-                          borderRadius: BorderRadius.circular(500)),
-                    ),
+                    // 
+                    Icon(iconJenis),
                     const SizedBox(
                       width: 20,
                     )
@@ -111,71 +105,78 @@ class _TransactionState extends State<Transaction> {
     }
 
     return Scaffold(
-        drawer: Drawer(width: MediaQuery.of(context).size.width / 1.3),
-        appBar: AppBar(
-          centerTitle: true,
-          title: Container(
-            padding: const EdgeInsets.only(right: 5),
-            height: kToolbarHeight / 1.4,
-            width: MediaQuery.of(context).size.width / 2.5,
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(25)),
-                border: Border.all(width: 2, color: Colors.white)),
-            child: TextField(
-              style: GoogleFonts.inter(color: Colors.white),
-              cursorColor: Colors.white,
-              decoration: InputDecoration(
-                  hintText: 'Cari barang',
-                  hintStyle: GoogleFonts.inter(color: Colors.white),
-                  border: const OutlineInputBorder(borderSide: BorderSide.none),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Colors.white,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10)),
-            ),
-          ),
-
-          // ),
-          foregroundColor: Colors.white,
-          backgroundColor: const Color.fromARGB(255, 160, 51, 250),
-        ),
-        body: produk == []
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : Column(children: [
-                SlidingClippedNavBar(
-                  backgroundColor: const Color.fromARGB(255, 254, 255, 224),
-                  barItems: [
-                    BarItem(title: 'All', icon: Icons.apps),
-                    BarItem(title: 'Food', icon: FontAwesomeIcons.burger),
-                    BarItem(title: 'Drinks', icon: Icons.local_bar),
-                    BarItem(title: 'Others', icon: FontAwesomeIcons.ellipsis)
-                  ],
-                  selectedIndex: selectedIndex,
-                  onButtonPressed: (index) {
-                    // fetchProduct(jenis[index]);
-                    setState(() {
-                      selectedIndex = index;
-                      _pageControl.animateToPage(selectedIndex,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeOut);
-                    });
-                  },
-                  activeColor: warnaBarItem[selectedIndex],
-                  inactiveColor: Colors.grey.shade600,
+      drawer: Drawer(width: MediaQuery.of(context).size.width / 1.3),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Container(
+          padding: const EdgeInsets.only(right: 5),
+          height: kToolbarHeight / 1.4,
+          width: MediaQuery.of(context).size.width / 2.5,
+          decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(25)),
+              border: Border.all(width: 2, color: Colors.white)),
+          child: TextField(
+            style: GoogleFonts.inter(color: Colors.white),
+            cursorColor: Colors.white,
+            decoration: InputDecoration(
+                hintText: 'Cari barang',
+                hintStyle: GoogleFonts.inter(color: Colors.white),
+                border: const OutlineInputBorder(borderSide: BorderSide.none),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Colors.white,
                 ),
-                Expanded(
-                    child: PageView(
-                  controller: _pageControl,
-                  children: [
-                    generateCard(),
-                    generateCard('makanan'),
-                    generateCard('minuman'),
-                    generateCard('lainnya')
-                  ],
-                ))
-              ]));
+                contentPadding: const EdgeInsets.symmetric(vertical: 10)),
+          ),
+        ),
+
+        // ),
+        foregroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 160, 51, 250),
+      ),
+      body: Column(children: [
+        SlidingClippedNavBar(
+          backgroundColor:  Color.fromARGB(255, 254, 255, 224),
+          barItems: [
+            BarItem(title: 'All', icon: Icons.apps),
+            BarItem(title: 'Food', icon: FontAwesomeIcons.burger),
+            BarItem(title: 'Drinks', icon: Icons.local_bar),
+            BarItem(title: 'Others', icon: FontAwesomeIcons.ellipsis)
+          ],
+          selectedIndex: selectedIndex,
+          onButtonPressed: (index) {
+            // fetchProduct(jenis[index]);
+            setState(() {
+              selectedIndex = index;
+              _pageControl.animateToPage(selectedIndex,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut);
+            });
+          },
+          activeColor: warnaBarItem[selectedIndex],
+          inactiveColor: Colors.grey.shade600,
+        ),
+        Expanded(
+            child: PageView(
+          controller: _pageControl,
+          children: [
+            generateCard(),
+            generateCard('makanan'),
+            generateCard('minuman'),
+            generateCard('lainnya')
+          ],
+        ))
+      ]),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>addProduct()));
+        },
+        elevation: 15,
+        backgroundColor: Color.fromARGB(255, 160, 51, 250),
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
+
+      ),
+    );
   }
 }
