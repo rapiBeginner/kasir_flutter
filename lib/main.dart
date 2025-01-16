@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ukk_flutter/transaksi.dart';
+import 'package:ukk_flutter/barang/transaksi.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: Column(
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.all(12),
+                                      padding: const EdgeInsets.only(left: 12),
                                       decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
@@ -135,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               2,
                                       child: Center(
                                         child: TextField(
-                                          textAlignVertical: TextAlignVertical.top,
+                              
                                           style: GoogleFonts.lato(
                                               fontSize: MediaQuery.of(context)
                                                       .size

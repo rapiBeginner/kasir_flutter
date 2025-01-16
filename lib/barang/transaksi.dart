@@ -3,7 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ukk_flutter/createProduk.dart';
+import 'package:ukk_flutter/barang/createProduk.dart';
+import 'package:ukk_flutter/barang/editProduk.dart';
 
 class Transaction extends StatefulWidget {
   const Transaction({super.key});
@@ -68,11 +69,14 @@ class _TransactionState extends State<Transaction> {
             IconData iconJenis;
             Color warnaIcon;
             if (data[index]['jenis'] == 'makanan') {
-             iconJenis = FontAwesomeIcons.burger;
+              iconJenis = FontAwesomeIcons.burger;
+              warnaIcon = Colors.red;
             } else if (data[index]['jenis'] == 'minuman') {
-             iconJenis = Icons.local_bar;
+              iconJenis = Icons.local_bar;
+              warnaIcon = Colors.blue;
             } else {
-             iconJenis = FontAwesomeIcons.ellipsis;
+              iconJenis = FontAwesomeIcons.ellipsis;
+              warnaIcon = Colors.black;
             }
             return Card(
               elevation: 10,
@@ -87,11 +91,25 @@ class _TransactionState extends State<Transaction> {
                         Text('${data[index]["Nama"]}'),
                         Text('Sisa stok:${data[index]["Stok"]}'),
                         Text('${data[index]["Harga"]}'),
+                        
                       ],
                     ),
                     const Spacer(),
-                    // 
-                    Icon(iconJenis),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(onPressed: (){
+                            editDialogue(context, data[index]);
+                          }, icon:Icon(Icons.edit))
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      iconJenis,
+                      color: warnaIcon,
+                    ),
                     const SizedBox(
                       width: 20,
                     )
@@ -134,48 +152,52 @@ class _TransactionState extends State<Transaction> {
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 160, 51, 250),
       ),
-      body: Column(children: [
-        SlidingClippedNavBar(
-          backgroundColor:  Color.fromARGB(255, 254, 255, 224),
-          barItems: [
-            BarItem(title: 'All', icon: Icons.apps),
-            BarItem(title: 'Food', icon: FontAwesomeIcons.burger),
-            BarItem(title: 'Drinks', icon: Icons.local_bar),
-            BarItem(title: 'Others', icon: FontAwesomeIcons.ellipsis)
-          ],
-          selectedIndex: selectedIndex,
-          onButtonPressed: (index) {
-            // fetchProduct(jenis[index]);
-            setState(() {
-              selectedIndex = index;
-              _pageControl.animateToPage(selectedIndex,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut);
-            });
-          },
-          activeColor: warnaBarItem[selectedIndex],
-          inactiveColor: Colors.grey.shade600,
-        ),
-        Expanded(
-            child: PageView(
-          controller: _pageControl,
-          children: [
-            generateCard(),
-            generateCard('makanan'),
-            generateCard('minuman'),
-            generateCard('lainnya')
-          ],
-        ))
-      ]),
+      body: response == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(children: [
+              SlidingClippedNavBar(
+                backgroundColor: Color.fromARGB(255, 254, 255, 224),
+                barItems: [
+                  BarItem(title: 'All', icon: Icons.apps),
+                  BarItem(title: 'Food', icon: FontAwesomeIcons.burger),
+                  BarItem(title: 'Drinks', icon: Icons.local_bar),
+                  BarItem(title: 'Others', icon: FontAwesomeIcons.ellipsis)
+                ],
+                selectedIndex: selectedIndex,
+                onButtonPressed: (index) {
+                  // fetchProduct(jenis[index]);
+                  setState(() {
+                    selectedIndex = index;
+                    _pageControl.animateToPage(selectedIndex,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut);
+                  });
+                },
+                activeColor: warnaBarItem[selectedIndex],
+                inactiveColor: Colors.grey.shade600,
+              ),
+              Expanded(
+                  child: PageView(
+                controller: _pageControl,
+                children: [
+                  generateCard(),
+                  generateCard('makanan'),
+                  generateCard('minuman'),
+                  generateCard('lainnya')
+                ],
+              ))
+            ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>addProduct()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => addProduct()));
         },
         elevation: 15,
         backgroundColor: Color.fromARGB(255, 160, 51, 250),
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
-
       ),
     );
   }
