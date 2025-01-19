@@ -8,7 +8,8 @@ import 'package:ukk_flutter/barang/editProduk.dart';
 import 'package:ukk_flutter/barang/hapusProduk.dart';
 
 class Transaction extends StatefulWidget {
-  const Transaction({super.key});
+  final Map user;
+  const Transaction({super.key, required this.user});
 
   @override
   State<Transaction> createState() => _TransactionState();
@@ -17,7 +18,6 @@ class Transaction extends StatefulWidget {
 class _TransactionState extends State<Transaction> {
   final _pageControl = PageController();
   var response;
-
   List produk = [];
   int selectedIndex = 0;
 
@@ -34,7 +34,10 @@ class _TransactionState extends State<Transaction> {
     Colors.black
   ];
   fetchProduct() async {
-    response = await Supabase.instance.client.from('produk').select().order('id', ascending: true);
+    response = await Supabase.instance.client
+        .from('produk')
+        .select()
+        .order('id', ascending: true);
 
     setState(() {
       produk = response;
@@ -49,6 +52,7 @@ class _TransactionState extends State<Transaction> {
 
   @override
   Widget build(BuildContext context) {
+    var user = widget.user;
     GridView generateCard([String? filter]) {
       List data;
 
@@ -92,7 +96,6 @@ class _TransactionState extends State<Transaction> {
                         Text('${data[index]["Nama"]}'),
                         Text('Sisa stok:${data[index]["Stok"]}'),
                         Text('${data[index]["Harga"]}'),
-                        
                       ],
                     ),
                     const Spacer(),
@@ -101,18 +104,24 @@ class _TransactionState extends State<Transaction> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(onPressed: () async{
-                            var result=await editDialogue(context, data[index]);
-                            if(result=='success'){
-                              fetchProduct();
-                            }
-                          }, icon:Icon(Icons.edit)),
-                          IconButton(onPressed: () async{
-                            var result=await hapusDialogue( data[index],context);
-                            if (result=='success') {
-                              fetchProduct();
-                            }
-                          }, icon:Icon(Icons.delete))
+                          IconButton(
+                              onPressed: () async {
+                                var result =
+                                    await editDialogue(context, data[index]);
+                                if (result == 'success') {
+                                  fetchProduct();
+                                }
+                              },
+                              icon: Icon(Icons.edit)),
+                          IconButton(
+                              onPressed: () async {
+                                var result =
+                                    await hapusDialogue(data[index], context);
+                                if (result == 'success') {
+                                  fetchProduct();
+                                }
+                              },
+                              icon: Icon(Icons.delete))
                         ],
                       ),
                     ),
@@ -133,7 +142,61 @@ class _TransactionState extends State<Transaction> {
     }
 
     return Scaffold(
-      drawer: Drawer(width: MediaQuery.of(context).size.width / 1.3),
+      drawer: Drawer(
+        width: MediaQuery.of(context).size.width / 1.3,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(widget.user['nama']),
+              accountEmail: Text(widget.user['email']),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.blueAccent,
+                child: Text(
+                  widget.user['nama'].toString().toUpperCase()[0],
+                  style: const TextStyle(fontSize: 24, color: Colors.white),
+                ),
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            widget.user['role'] == 'admin'
+                ? ListTile(
+                    leading: Icon(Icons.person_add), title: Text('Register'))
+                : SizedBox(),
+            // Menu Items
+            ListTile(
+              leading: const Icon(Icons.help),
+              title: const Text('Help'),
+              onTap: () {
+                // Navigator.push(
+                //   context,
+                //   // MaterialPageRoute(
+                //     // builder: (context) => ProfilePage(user: user),
+                //   // ),
+                // );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.pop(context); // Tutup Drawer
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                // Logout dan kembali ke halaman login
+                Navigator.pop(context); // Tutup Drawer
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         centerTitle: true,
         title: Container(
@@ -200,9 +263,12 @@ class _TransactionState extends State<Transaction> {
               ))
             ]),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          var result = await Navigator.push(
               context, MaterialPageRoute(builder: (context) => addProduct()));
+          if (result == 'success') {
+            fetchProduct();
+          }
         },
         elevation: 15,
         backgroundColor: Color.fromARGB(255, 160, 51, 250),

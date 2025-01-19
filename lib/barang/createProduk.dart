@@ -39,9 +39,9 @@ class _addProductState extends State<addProduct> {
             ),
             backgroundColor: Colors.green,
           ));
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Transaction()));
-          // Navigator.pop(context);
+          // Navigator.pushReplacement(
+          //     context, MaterialPageRoute(builder: (context) => Transaction()));
+          Navigator.pop(context, 'success');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
