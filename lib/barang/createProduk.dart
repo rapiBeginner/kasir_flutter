@@ -41,6 +41,7 @@ class _addProductState extends State<addProduct> {
           ));
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Transaction()));
+          // Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
@@ -76,11 +77,14 @@ class _addProductState extends State<addProduct> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
+                        
                         'Tambah Barang',
+                        
                         style: GoogleFonts.lato(
                             color: Colors.white,
                             fontSize: MediaQuery.of(context).size.height / 20),
                       ),
+                      SizedBox(height: MediaQuery.of(context).size.height/35),
                       Card(
                         elevation: 20,
                         child: Container(
@@ -116,7 +120,8 @@ class _addProductState extends State<addProduct> {
                                       decoration: InputDecoration(
                                           suffixIcon: Icon(Icons.abc),
                                           border: InputBorder.none,
-                                          labelText: 'Nama produk'),
+                                          labelText: 'Nama produk',
+                                          labelStyle: GoogleFonts.lato(fontSize: 20)),
                                     ),
                                   ),
                                 ),
@@ -147,7 +152,8 @@ class _addProductState extends State<addProduct> {
                                           suffixIcon:
                                               Icon(FontAwesomeIcons.dollarSign),
                                           border: InputBorder.none,
-                                          labelText: 'Harga'),
+                                          labelText: 'Harga',
+                                          labelStyle: GoogleFonts.lato(fontSize: 20)),
                                     ),
                                   ),
                                 ),
@@ -177,7 +183,8 @@ class _addProductState extends State<addProduct> {
                                       decoration: InputDecoration(
                                           suffixIcon: Icon(Icons.list_alt),
                                           border: InputBorder.none,
-                                          labelText: 'Stok'),
+                                          labelText: 'Stok',
+                                          labelStyle: GoogleFonts.lato(fontSize: 20)),
                                     ),
                                   ),
                                 ),
@@ -200,6 +207,7 @@ class _addProductState extends State<addProduct> {
                                             textFieldDecoration:
                                                 InputDecoration(
                                                     labelText: 'Jenis',
+                                                    labelStyle: GoogleFonts.lato(fontSize: 20),
                                                     border: InputBorder.none),
                                             // dropDownItemCount: 2,
                                             dropDownList: [
@@ -226,7 +234,7 @@ class _addProductState extends State<addProduct> {
                       ),
                       TextButton(
                         onPressed: productAdd,
-                        child: Text('Tambah'),
+                        child: Text('Tambah', style: GoogleFonts.lato(fontSize: 20),),
                         style: TextButton.styleFrom(
                           elevation: 15,
                           fixedSize: Size(MediaQuery.of(context).size.width / 1.5, 50),

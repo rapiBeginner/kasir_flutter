@@ -221,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   style: GoogleFonts.lato(
                                       fontSize:
                                           MediaQuery.of(context).size.height /
-                                              55),
+                                              58),
                                 ),
                                 TextButton(
                                   onPressed: () {},
@@ -233,7 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         decoration: TextDecoration.underline,
                                         fontSize:
                                             MediaQuery.of(context).size.height /
-                                                55),
+                                                58),
                                   ),
                                 )
                               ],

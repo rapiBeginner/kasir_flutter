@@ -5,6 +5,7 @@ import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ukk_flutter/barang/createProduk.dart';
 import 'package:ukk_flutter/barang/editProduk.dart';
+import 'package:ukk_flutter/barang/hapusProduk.dart';
 
 class Transaction extends StatefulWidget {
   const Transaction({super.key});
@@ -32,8 +33,8 @@ class _TransactionState extends State<Transaction> {
     Colors.blue,
     Colors.black
   ];
-  Future<void> fetchProduct() async {
-    response = await Supabase.instance.client.from('produk').select();
+  fetchProduct() async {
+    response = await Supabase.instance.client.from('produk').select().order('id', ascending: true);
 
     setState(() {
       produk = response;
@@ -49,7 +50,7 @@ class _TransactionState extends State<Transaction> {
   @override
   Widget build(BuildContext context) {
     GridView generateCard([String? filter]) {
-      dynamic data;
+      List data;
 
       if (filter == null) {
         data = produk;
@@ -100,9 +101,18 @@ class _TransactionState extends State<Transaction> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(onPressed: (){
-                            editDialogue(context, data[index]);
-                          }, icon:Icon(Icons.edit))
+                          IconButton(onPressed: () async{
+                            var result=await editDialogue(context, data[index]);
+                            if(result=='success'){
+                              fetchProduct();
+                            }
+                          }, icon:Icon(Icons.edit)),
+                          IconButton(onPressed: () async{
+                            var result=await hapusDialogue( data[index],context);
+                            if (result=='success') {
+                              fetchProduct();
+                            }
+                          }, icon:Icon(Icons.delete))
                         ],
                       ),
                     ),
