@@ -7,6 +7,9 @@ import 'package:ukk_flutter/barang/transaksi.dart';
 import 'package:ukk_flutter/main.dart';
 import 'package:ukk_flutter/user/createCustomer.dart';
 import 'package:ukk_flutter/user/createUser.dart';
+import 'package:ukk_flutter/user/editCustomer.dart';
+import 'package:ukk_flutter/user/editUser.dart';
+import 'package:ukk_flutter/user/hapusUserCustomer.dart';
 
 class userAndCustomers extends StatefulWidget {
   final Map? login;
@@ -21,9 +24,9 @@ class userAndCustomersState extends State<userAndCustomers>
   var customer;
   TabController? myTabControl;
   fetchUserCustomer() async {
-    var responseUser = await Supabase.instance.client.from('user').select();
+    var responseUser = await Supabase.instance.client.from('user').select().order('id_user', ascending: true);
     var responseCustomer =
-        await Supabase.instance.client.from('pelanggan').select();
+        await Supabase.instance.client.from('pelanggan').select().order('idPelanggan', ascending: true);
     setState(() {
       user = List<Map<String, dynamic>>.from(responseUser);
       customer = List<Map<String, dynamic>>.from(responseCustomer);
@@ -63,7 +66,7 @@ class userAndCustomersState extends State<userAndCustomers>
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Icon(icon),
@@ -75,14 +78,52 @@ class userAndCustomersState extends State<userAndCustomers>
                           ],
                         ),
                         Spacer(),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(onPressed: (){}, icon: Icon(Icons.edit, color:Colors.blue,)),
-                            IconButton(onPressed: (){}, icon: Icon(Icons.delete, color:Colors.red,)),
-
-                          ],
-                        )
+                        widget.login!['role'] == 'admin'
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                      onPressed: () async {
+                                        var result;
+                                        if (data[index]['id_user'] != null) {
+                                          result = await editDialogueUser(
+                                              context, data[index]);
+                                        }else{
+                                          result= await editDialogueCustomer(context, data[index]);
+                                        }
+                                        if (result == 'success') {
+                                          fetchUserCustomer();
+                                        }
+                                      },
+                                      icon: Icon(
+                                        Icons.edit,
+                                        color: Colors.blue,
+                                      )),
+                                  IconButton(
+                                      onPressed: () async {
+                                        int id = data[index]['id_user'] ??
+                                            data[index]['idPelanggan'];
+                                        String idColumn =
+                                            data[index]['id_user'] != null
+                                                ? "id_user"
+                                                : 'idPelanggan';
+                                        String table =
+                                            data[index]['id_user'] != null
+                                                ? "user"
+                                                : "pelanggan";
+                                        var result = await hapusUserCustomer(
+                                            id, idColumn, table, context);
+                                        if (result == 'success') {
+                                          fetchUserCustomer();
+                                        }
+                                      },
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      )),
+                                ],
+                              )
+                            : SizedBox(),
                       ]),
                 ),
               ),
@@ -128,42 +169,44 @@ class userAndCustomersState extends State<userAndCustomers>
                   context: context,
                   builder: (context) {
                     return Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.deepPurple,
-                                    foregroundColor: Colors.white),
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  var result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => addUser()));
-                                  if (result == 'success') {
-                                    fetchUserCustomer();
-                                  }
-                                },
-                                child: Text('Pengguna')),
-                                SizedBox(width: MediaQuery.of(context).size.width/10,),
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.deepPurple,
-                                    foregroundColor: Colors.white),
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  var result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => addCustomer()));
-                                  if (result == 'success') {
-                                    fetchUserCustomer();
-                                  }
-                                },
-                                child: Text('Pelanggan')),
-                          ],
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.deepPurple,
+                                  foregroundColor: Colors.white),
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                var result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => addUser()));
+                                if (result == 'success') {
+                                  fetchUserCustomer();
+                                }
+                              },
+                              child: Text('Pengguna')),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 10,
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.deepPurple,
+                                  foregroundColor: Colors.white),
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                var result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => addCustomer()));
+                                if (result == 'success') {
+                                  fetchUserCustomer();
+                                }
+                              },
+                              child: Text('Pelanggan')),
+                        ],
+                      ),
                     );
                   },
                 );

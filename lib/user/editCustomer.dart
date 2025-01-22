@@ -1,36 +1,36 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
-import 'transaksi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-editDialogue(BuildContext context, Map data) {
-  var namaController = TextEditingController(text: data['Nama']);
-  var hargaController = TextEditingController(text: '${data['Harga']}');
-  var stokController = TextEditingController(text: '${data['Stok']}');
-  var jenisController = SingleValueDropDownController(data: DropDownValueModel(name: data['jenis'], value: data['jenis']));
+editDialogueCustomer(BuildContext context, Map data) {
+  var namaController = TextEditingController(text: data['nama']);
+  var alamatController = TextEditingController(text: '${data['alamat']}');
+  var noTelpController = TextEditingController(text: '${data['noTelp']}');
   var formKey = GlobalKey<FormState>();
 
-  void EditProduct() async {
-    if(formKey.currentState!.validate()){
-      var response = await Supabase.instance.client.from('produk').update({
-      'Nama': namaController.text,
-      'Stok': stokController.text,
-      'Harga': hargaController.text,
-      'jenis': jenisController.dropDownValue!.value,
-    }).eq('id', data['id']);
+  void EditCustomer() async {
+    if (formKey.currentState!.validate()) {
+      var response = await Supabase.instance.client.from('pelanggan').update({
+        'nama': namaController.text,
+        'noTelp': noTelpController.text,
+        'alamat': alamatController.text,
+      }).eq('idPelanggan', data['idPelanggan']);
 
-    if (response == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Data berhasil di ubah'),
-        backgroundColor: Colors.green,
-      ));
-      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Transaction()));
-      Navigator.pop(context, 'success');
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Edit data gagal'), backgroundColor: Colors.red,));
-    }
+      if (response == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Data berhasil di ubah'),
+          backgroundColor: Colors.green,
+        ));
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Transaction()));
+        Navigator.pop(context, 'success');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Edit data gagal'),
+          backgroundColor: Colors.red,
+        ));
+      }
     }
   }
 
@@ -50,7 +50,7 @@ editDialogue(BuildContext context, Map data) {
                 actions: [
                   ElevatedButton(
                     onPressed: () {
-                      EditProduct();
+                      EditCustomer();
                     },
                     child: Text(
                       'Edit',
@@ -79,7 +79,7 @@ editDialogue(BuildContext context, Map data) {
                                 border: Border(
                                     bottom:
                                         BorderSide(color: Colors.deepPurple))),
-                            height: constraint.maxHeight / 4,
+                            height: constraint.maxHeight / 3,
                             width: constraint.maxWidth,
                             child: Center(
                               child: TextFormField(
@@ -92,8 +92,7 @@ editDialogue(BuildContext context, Map data) {
                                 controller: namaController,
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    labelText: 'Nama produk'),
-              
+                                    labelText: 'Nama pelanggan'),
                               ),
                             ),
                           ),
@@ -103,84 +102,41 @@ editDialogue(BuildContext context, Map data) {
                                 border: Border(
                                     bottom:
                                         BorderSide(color: Colors.deepPurple))),
-                            height: constraint.maxHeight / 4,
+                            height: constraint.maxHeight / 3,
                             width: constraint.maxWidth,
                             child: Center(
                               child: TextFormField(
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Harga wajib di isi';
+                                    return 'Alamat wajib di isi';
                                   }
-
                                   return null;
                                 },
-                                controller: hargaController,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly
-                                ],
+                                controller: alamatController,
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    labelText: 'Harga'),
-                              
+                                    labelText: 'Alamat'),
                               ),
                             ),
                           ),
                           Container(
                             padding: EdgeInsets.only(left: 10, right: 10),
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    bottom:
-                                        BorderSide(color: Colors.deepPurple))),
-                            height: constraint.maxHeight / 4,
+                            height: constraint.maxHeight / 3,
                             width: constraint.maxWidth,
                             child: Center(
                               child: TextFormField(
-                                controller: stokController,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly
-                                ],
+                                controller: noTelpController,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Stok wajib di isi';
+                                    return 'Nomor telepon wajib di isi';
                                   }
                                   return null;
                                 },
+                                keyboardType: TextInputType.phone,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    labelText: 'Stok'),
-                                
-                              ),
-                            ),
-                          ),
-                          Container(
-                            // decoration: BoxDecoration(
-                            //     border: Bor),
-                            padding: EdgeInsets.only(left: 10, right: 10),
-                            height: constraint.maxHeight / 4,
-                            width: constraint.maxWidth,
-                            child: Center(
-                              child: DropDownTextField(
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'jenis wajib di isi';
-                                  }
-                                  return null;
-                                },
-                                controller: jenisController,
-                                dropDownList: [
-                                  DropDownValueModel(
-                                      name: 'makanan', value: 'makanan'),
-                                  DropDownValueModel(
-                                      name: 'minuman', value: 'minuman'),
-                                  DropDownValueModel(
-                                      name: 'lainnya', value: 'lainnya')
-                                ],
-                                textFieldDecoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    labelText: 'Jenis'),
-                              
+                                    labelText: 'Nomor telepon'),
                               ),
                             ),
                           ),
