@@ -6,9 +6,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ukk_flutter/barang/createProduk.dart';
 import 'package:ukk_flutter/barang/editProduk.dart';
 import 'package:ukk_flutter/barang/hapusProduk.dart';
+import 'package:ukk_flutter/main.dart';
+import 'package:ukk_flutter/user/users.dart';
 
 class Transaction extends StatefulWidget {
-  final Map user;
+  final Map? user;
   const Transaction({super.key, required this.user});
 
   @override
@@ -20,6 +22,7 @@ class _TransactionState extends State<Transaction> {
   var response;
   List produk = [];
   int selectedIndex = 0;
+  var slidingBarKey;
 
   var jenis = [
     null,
@@ -68,7 +71,7 @@ class _TransactionState extends State<Transaction> {
         crossAxisCount: 1,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
-        childAspectRatio: 3.5,
+        childAspectRatio: 2.5,
         children: [
           ...List.generate(data.length, (index) {
             IconData iconJenis;
@@ -84,6 +87,7 @@ class _TransactionState extends State<Transaction> {
               warnaIcon = Colors.black;
             }
             return Card(
+              shape: RoundedRectangleBorder(side: BorderSide(color: Color.fromARGB(255, 169, 75, 240), ),borderRadius: BorderRadius.all(Radius.circular(20))),
               elevation: 10,
               child: LayoutBuilder(builder: (context, constraint) {
                 return Padding(
@@ -148,23 +152,26 @@ class _TransactionState extends State<Transaction> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(widget.user['nama']),
-              accountEmail: Text(widget.user['email']),
+              accountName: Text(widget.user!['nama']),
+              accountEmail: Text(widget.user!['email']),
               currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: Color.fromARGB(255, 245, 246, 212),
                 child: Text(
-                  widget.user['nama'].toString().toUpperCase()[0],
+                  widget.user!['nama'].toString().toUpperCase()[0],
                   style: const TextStyle(fontSize: 24, color: Colors.white),
                 ),
               ),
               decoration: const BoxDecoration(
-                color: Colors.blue,
+                color: Color.fromARGB(255, 176, 80, 255),
               ),
             ),
-            widget.user['role'] == 'admin'
-                ? ListTile(
-                    leading: Icon(Icons.person_add), title: Text('Register'))
-                : SizedBox(),
+  
+                ListTile(
+                  onTap: (){
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>userAndCustomers(login: user)));
+                  },
+                    leading: Icon(Icons.person), title: Text('User and Customer')),
+  
             // Menu Items
             ListTile(
               leading: const Icon(Icons.help),
@@ -189,9 +196,9 @@ class _TransactionState extends State<Transaction> {
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
               onTap: () {
-                // Logout dan kembali ke halaman login
                 Navigator.pop(context); // Tutup Drawer
-                Navigator.pushReplacementNamed(context, '/login');
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => MyApp()));
               },
             ),
           ],
@@ -243,7 +250,7 @@ class _TransactionState extends State<Transaction> {
                   // fetchProduct(jenis[index]);
                   setState(() {
                     selectedIndex = index;
-                    _pageControl.animateToPage(selectedIndex,
+                    _pageControl.animateToPage(index,
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeOut);
                   });
@@ -253,7 +260,13 @@ class _TransactionState extends State<Transaction> {
               ),
               Expanded(
                   child: PageView(
+                physics: ClampingScrollPhysics(),
                 controller: _pageControl,
+                onPageChanged: (index) {
+                  setState(() {
+                    selectedIndex = index;
+                  });
+                },
                 children: [
                   generateCard(),
                   generateCard('makanan'),

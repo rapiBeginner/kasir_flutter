@@ -27,15 +27,15 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
-  final String title;
+  // final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -146,7 +146,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 5 /
                                                 2,
                                         child: Center(
-                                          child: TextField(
+                                          child: TextFormField(
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Email kosong';
+                                              }
+                                              return null;
+                                            },
                                             controller: emailController,
                                             style: GoogleFonts.lato(
                                                 fontSize: MediaQuery.of(context)
@@ -174,7 +181,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 5 /
                                                 2,
                                         child: Center(
-                                          child: TextField(
+                                          child: TextFormField(
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Password kosong';
+                                              }
+                                              return null;
+                                            },
                                             controller: pwController,
                                             style: GoogleFonts.lato(
                                                 fontSize: MediaQuery.of(context)
@@ -202,10 +216,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               ElevatedButton(
                                 onPressed: () {
                                   if (formKey.currentState!.validate()) {
-                                    LoginFunction(emailController.text, pwController.text, context);
-                                  }
-                                  else{
-
+                                    LoginFunction(emailController.text,
+                                        pwController.text, context);
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(

@@ -1,35 +1,34 @@
-import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ukk_flutter/barang/transaksi.dart';
 
-class addProduct extends StatefulWidget {
-  const addProduct({super.key});
+class addUser extends StatefulWidget {
+  const addUser({super.key});
 
-  State<addProduct> createState() => _addProductState();
+  State<addUser> createState() => _addUserState();
 }
 
-class _addProductState extends State<addProduct> {
+class _addUserState extends State<addUser> {
   var response;
   final formKey = GlobalKey<FormState>();
   TextEditingController namaController = TextEditingController();
-  TextEditingController hargaController = TextEditingController();
-  TextEditingController stokController = TextEditingController();
-  final jenisController = SingleValueDropDownController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController pwController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
-    void productAdd() async {
+    void userAdd() async {
       if (formKey.currentState!.validate()) {
-        response = await Supabase.instance.client.from('produk').insert({
-          "Nama": namaController.text,
-          "Harga": hargaController.text,
-          "Stok": stokController.text,
-          "jenis": jenisController.dropDownValue!.value
+        response = await Supabase.instance.client.from('user').insert({
+          "nama": namaController.text,
+          "email": emailController.text,
+          "password": pwController.text,
+          "role": "petugas"
         });
         if (response == null) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -81,13 +80,13 @@ class _addProductState extends State<addProduct> {
                         children: [
                           Text(
                             
-                            'Tambah Barang',
+                            'Registrasi Pengguna',
                             
                             style: GoogleFonts.lato(
                                 color: Colors.white,
-                                fontSize: MediaQuery.of(context).size.height / 20),
+                                fontSize: MediaQuery.of(context).size.height / 22),
                           ),
-                          FaIcon(FontAwesomeIcons.cartPlus)
+                          FaIcon(Icons.person_add)
                         ],
                       ),
                       SizedBox(height: MediaQuery.of(context).size.height/35),
@@ -111,7 +110,7 @@ class _addProductState extends State<addProduct> {
                                           bottom: BorderSide(
                                               color: Color.fromARGB(
                                                   255, 189, 114, 251)))),
-                                  height: constraint.maxHeight / 4,
+                                  height: constraint.maxHeight / 3,
                                   width: constraint.maxWidth,
                                   child: Center(
                                     child: TextFormField(
@@ -126,7 +125,7 @@ class _addProductState extends State<addProduct> {
                                       decoration: InputDecoration(
                                           suffixIcon: Icon(Icons.abc),
                                           border: InputBorder.none,
-                                          labelText: 'Nama produk',
+                                          labelText: 'Nama pengguna',
                                           labelStyle: GoogleFonts.lato(fontSize: 20)),
                                     ),
                                   ),
@@ -138,98 +137,58 @@ class _addProductState extends State<addProduct> {
                                           bottom: BorderSide(
                                               color: Color.fromARGB(
                                                   255, 189, 114, 251)))),
-                                  height: constraint.maxHeight / 4,
+                                  height: constraint.maxHeight / 3,
                                   width: constraint.maxWidth,
                                   child: Center(
                                     child: TextFormField(
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Harga tidak boleh kosong';
+                                          return 'Email tidak boleh kosong';
+                                        }else if(!value.endsWith('@gmail.com')){
+                                          return 'Format email tidak valid';
                                         }
 
                                         return null;
                                       },
-                                      controller: hargaController,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
+                                      controller: emailController,
                                       decoration: InputDecoration(
                                           suffixIcon:
-                                              Icon(FontAwesomeIcons.dollarSign),
+                                              Icon(Icons.email),
                                           border: InputBorder.none,
-                                          labelText: 'Harga',
+                                          labelText: 'Email',
                                           labelStyle: GoogleFonts.lato(fontSize: 20)),
                                     ),
                                   ),
                                 ),
                                 Container(
                                   padding: EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          bottom: BorderSide(
-                                              color: Color.fromARGB(
-                                                  255, 189, 114, 251)))),
-                                  height: constraint.maxHeight / 4,
+                                  // decoration: BoxDecoration(
+                                  //     border: Border(
+                                  //         bottom: BorderSide(
+                                  //             color: Color.fromARGB(
+                                  //                 255, 189, 114, 251)))),
+                                  height: constraint.maxHeight / 3,
                                   width: constraint.maxWidth,
                                   child: Center(
                                     child: TextFormField(
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Stok tidak boleh kosong';
+                                          return 'Password tidak boleh kosong';
                                         }
 
                                         return null;
                                       },
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
-                                      controller: stokController,
+                                      obscureText: true,
+                                      controller: pwController,
                                       decoration: InputDecoration(
-                                          suffixIcon: Icon(Icons.list_alt),
+                                          suffixIcon: Icon(Icons.password),
                                           border: InputBorder.none,
-                                          labelText: 'Stok',
+                                          labelText: 'Password',
                                           labelStyle: GoogleFonts.lato(fontSize: 20)),
                                     ),
                                   ),
                                 ),
-                                Container(
-                                    height: constraint.maxHeight / 4,
-                                    width: constraint.maxWidth,
-                                    child: Padding(
-                                        padding: const EdgeInsets.all(12),
-                                        child: Center(
-                                          child: DropDownTextField(
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Jenis tidak boleh kosong';
-                                              }
 
-                                              return null;
-                                            },
-                                            controller: jenisController,
-                                            textFieldDecoration:
-                                                InputDecoration(
-                                                    labelText: 'Jenis',
-                                                    labelStyle: GoogleFonts.lato(fontSize: 20),
-                                                    border: InputBorder.none),
-                                            // dropDownItemCount: 2,
-                                            dropDownList: [
-                                              DropDownValueModel(
-                                                  name: 'Makanan',
-                                                  value: 'makanan'),
-                                              DropDownValueModel(
-                                                  name: 'Minuman',
-                                                  value: 'minuman'),
-                                              DropDownValueModel(
-                                                  name: 'Lainnya',
-                                                  value: 'lainnya'),
-                                              // DropDownValueModel(name: 'Makanan', value: 'makanan')
-                                            ],
-                                          ),
-                                        ))),
                               ],
                             );
                           }),
@@ -239,7 +198,7 @@ class _addProductState extends State<addProduct> {
                         height: MediaQuery.of(context).size.height / 40,
                       ),
                       TextButton(
-                        onPressed: productAdd,
+                        onPressed: userAdd,
                         child: Text('Tambah', style: GoogleFonts.lato(fontSize: 20),),
                         style: TextButton.styleFrom(
                           elevation: 15,
@@ -256,3 +215,4 @@ class _addProductState extends State<addProduct> {
         ));
   }
 }
+
