@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ukk_flutter/barang/transaksi.dart';
 import 'package:ukk_flutter/user/login.dart';
 
 void main() async {
+  // await initializeDateFormatting('id_ID','');
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
       url: 'https://fhdchhzmjajsyloogyvd.supabase.co',
@@ -21,6 +23,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // locale: const Locale('id', 'ID'),
+      // supportedLocales: [
+      //   Locale('en', 'US'), // Default
+      //   Locale('id', 'ID'), // Bahasa Indonesia
+      // ],
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(

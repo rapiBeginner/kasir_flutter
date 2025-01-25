@@ -7,10 +7,11 @@ import 'package:ukk_flutter/barang/createProduk.dart';
 import 'package:ukk_flutter/barang/editProduk.dart';
 import 'package:ukk_flutter/barang/hapusProduk.dart';
 import 'package:ukk_flutter/main.dart';
+import 'package:ukk_flutter/penjualan/penjualan.dart';
 import 'package:ukk_flutter/user/users.dart';
 
 class Transaction extends StatefulWidget {
-  final Map? user;
+  final Map user;
   const Transaction({super.key, required this.user});
 
   @override
@@ -87,7 +88,11 @@ class _TransactionState extends State<Transaction> {
               warnaIcon = Colors.black;
             }
             return Card(
-              shape: RoundedRectangleBorder(side: BorderSide(color: Color.fromARGB(255, 169, 75, 240), ),borderRadius: BorderRadius.all(Radius.circular(20))),
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: Color.fromARGB(255, 169, 75, 240),
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               elevation: 10,
               child: LayoutBuilder(builder: (context, constraint) {
                 return Padding(
@@ -152,26 +157,40 @@ class _TransactionState extends State<Transaction> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(widget.user!['nama']),
-              accountEmail: Text(widget.user!['email']),
+              accountName: Text(widget.user['nama']),
+              accountEmail:
+                  Text('${widget.user['email']} (${widget.user['role']})'),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Color.fromARGB(255, 245, 246, 212),
                 child: Text(
-                  widget.user!['nama'].toString().toUpperCase()[0],
-                  style: const TextStyle(fontSize: 24, color: Colors.white),
+                  widget.user['nama'].toString().toUpperCase()[0],
+                  style: const TextStyle(fontSize: 24),
                 ),
               ),
               decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 176, 80, 255),
               ),
             ),
-  
-                ListTile(
-                  onTap: (){
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>userAndCustomers(login: user)));
-                  },
-                    leading: Icon(Icons.person), title: Text('User and Customer')),
-  
+
+            ListTile(
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => userAndCustomers(login: user)));
+                },
+                leading: Icon(Icons.person),
+                title: Text('User and Customer')),
+            ListTile(
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Penjualan(login: user)));
+                },
+                leading: FaIcon(FontAwesomeIcons.dollarSign),
+                title: Text('Sales')),
+
             // Menu Items
             ListTile(
               leading: const Icon(Icons.help),
@@ -206,28 +225,31 @@ class _TransactionState extends State<Transaction> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        title: Container(
-          padding: const EdgeInsets.only(right: 5),
-          height: kToolbarHeight / 1.4,
-          width: MediaQuery.of(context).size.width / 2.5,
-          decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(25)),
-              border: Border.all(width: 2, color: Colors.white)),
-          child: TextField(
-            style: GoogleFonts.inter(color: Colors.white),
-            cursorColor: Colors.white,
-            decoration: InputDecoration(
-                hintText: 'Cari barang',
-                hintStyle: GoogleFonts.inter(color: Colors.white),
-                border: const OutlineInputBorder(borderSide: BorderSide.none),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: Colors.white,
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 10)),
-          ),
+        // title: Container(
+        //   padding: const EdgeInsets.only(right: 5),
+        //   height: kToolbarHeight / 1.4,
+        //   width: MediaQuery.of(context).size.width / 2.5,
+        //   decoration: BoxDecoration(
+        //       borderRadius: const BorderRadius.all(Radius.circular(25)),
+        //       border: Border.all(width: 2, color: Colors.white)),
+        //   child: TextField(
+        //     style: GoogleFonts.inter(color: Colors.white),
+        //     cursorColor: Colors.white,
+        //     decoration: InputDecoration(
+        //         hintText: 'Cari barang',
+        //         hintStyle: GoogleFonts.inter(color: Colors.white),
+        //         border: const OutlineInputBorder(borderSide: BorderSide.none),
+        //         prefixIcon: const Icon(
+        //           Icons.search,
+        //           color: Colors.white,
+        //         ),
+        //         contentPadding: const EdgeInsets.symmetric(vertical: 10)),
+        //   ),
+        // ),
+        title: Text(
+          'Product',
         ),
-
+        titleTextStyle: GoogleFonts.lato(fontSize: 30),
         // ),
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 160, 51, 250),

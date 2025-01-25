@@ -217,15 +217,9 @@ class _addProductState extends State<addProduct> {
                                                     border: InputBorder.none),
                                             // dropDownItemCount: 2,
                                             dropDownList: [
-                                              DropDownValueModel(
-                                                  name: 'Makanan',
-                                                  value: 'makanan'),
-                                              DropDownValueModel(
-                                                  name: 'Minuman',
-                                                  value: 'minuman'),
-                                              DropDownValueModel(
-                                                  name: 'Lainnya',
-                                                  value: 'lainnya'),
+                                            ...List.generate(10, (index){
+                                              return DropDownValueModel(name: '${index}', value: '${index}') ;
+                                            })
                                               // DropDownValueModel(name: 'Makanan', value: 'makanan')
                                             ],
                                           ),

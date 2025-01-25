@@ -14,6 +14,10 @@ editDialogue(BuildContext context, Map data) {
 
   void EditProduct() async {
     if(formKey.currentState!.validate()){
+     var test= await Supabase.instance.client
+        .from('penjualan')
+        .select('*, pelanggan(*)');
+    print(test);
       var response = await Supabase.instance.client.from('produk').update({
       'Nama': namaController.text,
       'Stok': stokController.text,

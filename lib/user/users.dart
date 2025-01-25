@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ukk_flutter/barang/transaksi.dart';
 import 'package:ukk_flutter/main.dart';
+import 'package:ukk_flutter/penjualan/penjualan.dart';
 import 'package:ukk_flutter/user/createCustomer.dart';
 import 'package:ukk_flutter/user/createUser.dart';
 import 'package:ukk_flutter/user/editCustomer.dart';
@@ -12,7 +13,7 @@ import 'package:ukk_flutter/user/editUser.dart';
 import 'package:ukk_flutter/user/hapusUserCustomer.dart';
 
 class userAndCustomers extends StatefulWidget {
-  final Map? login;
+  final Map login;
   userAndCustomers({super.key, required this.login});
 
   State<userAndCustomers> createState() => userAndCustomersState();
@@ -24,9 +25,14 @@ class userAndCustomersState extends State<userAndCustomers>
   var customer;
   TabController? myTabControl;
   fetchUserCustomer() async {
-    var responseUser = await Supabase.instance.client.from('user').select().order('id_user', ascending: true);
-    var responseCustomer =
-        await Supabase.instance.client.from('pelanggan').select().order('idPelanggan', ascending: true);
+    var responseUser = await Supabase.instance.client
+        .from('user')
+        .select()
+        .order('id_user', ascending: true);
+    var responseCustomer = await Supabase.instance.client
+        .from('pelanggan')
+        .select()
+        .order('idPelanggan', ascending: true);
     setState(() {
       user = List<Map<String, dynamic>>.from(responseUser);
       customer = List<Map<String, dynamic>>.from(responseCustomer);
@@ -88,8 +94,9 @@ class userAndCustomersState extends State<userAndCustomers>
                                         if (data[index]['id_user'] != null) {
                                           result = await editDialogueUser(
                                               context, data[index]);
-                                        }else{
-                                          result= await editDialogueCustomer(context, data[index]);
+                                        } else {
+                                          result = await editDialogueCustomer(
+                                              context, data[index]);
                                         }
                                         if (result == 'success') {
                                           fetchUserCustomer();
@@ -136,28 +143,31 @@ class userAndCustomersState extends State<userAndCustomers>
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Container(
-          padding: const EdgeInsets.only(right: 5),
-          height: kToolbarHeight / 1.4,
-          width: MediaQuery.of(context).size.width / 2.5,
-          decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(25)),
-              border: Border.all(width: 2, color: Colors.white)),
-          child: TextField(
-            style: GoogleFonts.inter(color: Colors.white),
-            cursorColor: Colors.white,
-            decoration: InputDecoration(
-                hintText: 'Cari barang',
-                hintStyle: GoogleFonts.inter(color: Colors.white),
-                border: const OutlineInputBorder(borderSide: BorderSide.none),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: Colors.white,
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 10)),
-          ),
+        // title: Container(
+        //   padding: const EdgeInsets.only(right: 5),
+        //   height: kToolbarHeight / 1.4,
+        //   width: MediaQuery.of(context).size.width / 2.5,
+        //   decoration: BoxDecoration(
+        //       borderRadius: const BorderRadius.all(Radius.circular(25)),
+        //       border: Border.all(width: 2, color: Colors.white)),
+        //   child: TextField(
+        //     style: GoogleFonts.inter(color: Colors.white),
+        //     cursorColor: Colors.white,
+        //     decoration: InputDecoration(
+        //         hintText: 'Cari barang',
+        //         hintStyle: GoogleFonts.inter(color: Colors.white),
+        //         border: const OutlineInputBorder(borderSide: BorderSide.none),
+        //         prefixIcon: const Icon(
+        //           Icons.search,
+        //           color: Colors.white,
+        //         ),
+        //         contentPadding: const EdgeInsets.symmetric(vertical: 10)),
+        //   ),
+        // ),
+        title: Text(
+          'Users & Customers',
         ),
-
+        titleTextStyle: GoogleFonts.lato(fontSize: 30),
         // ),
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 160, 51, 250),
@@ -228,12 +238,13 @@ class userAndCustomersState extends State<userAndCustomers>
               Color.fromARGB(255, 175, 95, 255),
               Color.fromARGB(255, 206, 157, 255),
             ], begin: Alignment.topLeft)),
-            accountName: Text(widget.login!['nama']),
-            accountEmail: Text(widget.login!['email']),
+            accountName: Text(widget.login['nama']),
+            accountEmail:
+                Text('${widget.login['email']} (${widget.login['role']})'),
             currentAccountPicture: CircleAvatar(
               backgroundColor: const Color.fromARGB(255, 255, 252, 221),
               child: Text(
-                widget.login!['nama'].toString().toUpperCase()[0],
+                widget.login['nama'].toString().toUpperCase()[0],
                 style: GoogleFonts.lato(fontSize: 24),
               ),
             ),
@@ -247,6 +258,15 @@ class userAndCustomersState extends State<userAndCustomers>
               },
               leading: FaIcon(FontAwesomeIcons.cartShopping),
               title: Text('Product')),
+          ListTile(
+              onTap: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Penjualan(login: widget.login)));
+              },
+              leading: FaIcon(FontAwesomeIcons.dollarSign),
+              title: Text('Sales')),
 
           // Menu Items
           ListTile(
