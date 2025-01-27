@@ -11,6 +11,7 @@ import 'package:ukk_flutter/barang/editProduk.dart';
 import 'package:ukk_flutter/barang/transaksi.dart';
 import 'package:ukk_flutter/main.dart';
 import 'package:ukk_flutter/penjualan/createPenjualan.dart';
+import 'package:ukk_flutter/penjualan/hapusPDetail.dart';
 import 'package:ukk_flutter/user/users.dart';
 
 class Penjualan extends StatefulWidget {
@@ -28,7 +29,7 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
   List produk = [];
   List pelanggan = [];
 
-  void fetchSales() async {
+  void fetchProductAndCustomer() async {
     var myProduk = await Supabase.instance.client
         .from('produk')
         .select()
@@ -38,6 +39,13 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
         .select()
         .order('idPelanggan', ascending: true);
 
+    setState(() {
+      produk = myProduk;
+      pelanggan = myCustomer;
+    });
+  }
+
+  void fetchSales() async {
     var responseSales = await Supabase.instance.client
         .from('penjualan')
         .select('*, pelanggan(*)');
@@ -48,8 +56,6 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
     setState(() {
       penjualan = responseSales;
       detailPenjualan = responseSalesDetail;
-      produk = myProduk;
-      pelanggan = myCustomer;
     });
   }
 
@@ -58,6 +64,7 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
     // TODO: implement initState
     super.initState();
     fetchSales();
+    fetchProductAndCustomer();
     myTabControl = TabController(length: 2, vsync: this);
   }
 
@@ -144,57 +151,94 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
               DateTime.parse(
                   detailPenjualan[index]['penjualan']['TanggalPenjualan']));
           return Card(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.person),
-                    SizedBox(
-                      width: 10,
+                    Row(
+                      children: [
+                        Icon(Icons.person),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(detailPenjualan[index]['penjualan']
+                                    ['idPelanggan'] ==
+                                null
+                            ? 'Pelanggan tidak terdaftar'
+                            : '${detailPenjualan[index]['penjualan']['pelanggan']['nama']} (${detailPenjualan[index]['penjualan']['pelanggan']['noTelp']})'),
+                      ],
                     ),
-                    Text(detailPenjualan[index]['penjualan']['idPelanggan'] ==
-                            null
-                        ? 'Pelanggan tidak terdaftar'
-                        : '${detailPenjualan[index]['penjualan']['pelanggan']['nama']} (${detailPenjualan[index]['penjualan']['pelanggan']['noTelp']})'),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      children: [
+                        Icon(FontAwesomeIcons.cartShopping),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                            '${detailPenjualan[index]['produk']['Nama']} (${detailPenjualan[index]['jumlahProduk']})'),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      children: [
+                        Icon(FontAwesomeIcons.rupiahSign),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text('${detailPenjualan[index]['subtotal']}'),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      children: [
+                        Icon(FontAwesomeIcons.calendar),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text('${tanggalPenjualan}'),
+                      ],
+                    ),
                   ],
                 ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
+                Spacer(),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(FontAwesomeIcons.cartShopping),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                        '${detailPenjualan[index]['produk']['Nama']} (${detailPenjualan[index]['jumlahProduk']})'),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    Icon(FontAwesomeIcons.rupiahSign),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text('${detailPenjualan[index]['subtotal']}'),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    Icon(FontAwesomeIcons.calendar),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text('${tanggalPenjualan}'),
+                    IconButton(
+                        onPressed: () async {
+                          // var result =
+                          //     await editDialogue(context, data[index]);
+                          // if (result == 'success') {
+                          //   fetchProduct();
+                          // }
+                        },
+                        icon: Icon(Icons.edit)),
+                    IconButton(
+                        onPressed: () async {
+                          var result = await hapusDetailPenjualan(
+                              detailPenjualan[index]['idDetail'], context);
+                          if (result == true) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                'Data berhasil dihapus',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor: Colors.green,
+                              duration: Duration(milliseconds: 1500),
+                            ));
+                            fetchSales();
+                          }
+                        },
+                        icon: Icon(Icons.delete))
                   ],
                 ),
               ],
@@ -324,7 +368,10 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
               fetchSales();
             }
           },
-          child: Icon(Icons.add,color: Colors.white,),
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
           backgroundColor: Color.fromARGB(255, 160, 51, 250),
         ));
   }

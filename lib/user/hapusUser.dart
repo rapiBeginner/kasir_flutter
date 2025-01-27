@@ -3,19 +3,19 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ukk_flutter/barang/transaksi.dart';
 
-hapusUserCustomer(
-    int idData, String idColumn, String table, BuildContext context) {
+hapusUser(
+    int idData,BuildContext context) {
   void hapusData() async {
     var response = await Supabase.instance.client
-        .from(table)
+        .from('user')
         .delete()
-        .eq(idColumn, idData);
+        .eq('id_user', idData);
     if (response == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Data berhasil di hapus'),
         backgroundColor: Colors.green,
       ));
-      Navigator.pop(context, 'success');
+      Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Hapus data gagal'),
@@ -35,7 +35,7 @@ hapusUserCustomer(
             width: MediaQuery.of(context).size.width / 2,
             child: Center(
               child: Text(
-                'Anda yakin menghapus data ini?',
+                'Anda yakin menghapus data pengguna ini?',
                 style: GoogleFonts.lato(fontSize: 25),
               ),
             ),

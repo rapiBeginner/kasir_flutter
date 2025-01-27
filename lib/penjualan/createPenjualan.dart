@@ -22,19 +22,27 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
   var pelangganController = SingleValueDropDownController();
 
   excecuteSales() async {
-    if (pelangganController.dropDownValue?.name==null) {
+    if (pelangganController.dropDownValue?.name == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
           'Pilih pelanggan',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.red,duration: Duration(milliseconds: 1500),
+        backgroundColor: Colors.red,
+        duration: Duration(milliseconds: 1500),
       ));
-
-    } else if(selectedProduk.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Isi data barang yang dibeli', style: TextStyle(color: Colors.white),), backgroundColor:Colors.red ,),);
-    } else{
-            var penjualan = await Supabase.instance.client
+    } else if (selectedProduk.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Isi data barang yang dibeli',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      var penjualan = await Supabase.instance.client
           .from('penjualan')
           .insert({
             'idPelanggan': pelangganController.dropDownValue!.value,
@@ -106,9 +114,11 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
                       controller: produkController,
                       enableSearch: true,
                       validator: (value) {
-                        if (value==null||value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Pilih barang yang dibeli';
                         }
+
+                        return null;
                       },
                     ),
                     TextFormField(
@@ -217,7 +227,6 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
                                                   padding:
                                                       const EdgeInsets.all(8.0),
                                                   child: Row(
-                                                    
                                                     children: [
                                                       Column(
                                                         crossAxisAlignment:
@@ -233,11 +242,18 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
                                                         ],
                                                       ),
                                                       Spacer(),
-                                                      IconButton(onPressed: (){
-                                                        setState(() {
-                                                          selectedProduk.removeAt(index);
-                                                        },);
-                                                      }, icon: Icon(Icons.delete)),
+                                                      IconButton(
+                                                          onPressed: () {
+                                                            setState(
+                                                              () {
+                                                                selectedProduk
+                                                                    .removeAt(
+                                                                        index);
+                                                              },
+                                                            );
+                                                          },
+                                                          icon: Icon(
+                                                              Icons.delete)),
                                                     ],
                                                   ),
                                                 ),

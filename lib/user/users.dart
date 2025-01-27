@@ -10,7 +10,8 @@ import 'package:ukk_flutter/user/createCustomer.dart';
 import 'package:ukk_flutter/user/createUser.dart';
 import 'package:ukk_flutter/user/editCustomer.dart';
 import 'package:ukk_flutter/user/editUser.dart';
-import 'package:ukk_flutter/user/hapusUserCustomer.dart';
+import 'package:ukk_flutter/user/hapusCustomer.dart';
+import 'package:ukk_flutter/user/hapusUser.dart';
 
 class userAndCustomers extends StatefulWidget {
   final Map login;
@@ -84,7 +85,7 @@ class userAndCustomersState extends State<userAndCustomers>
                           ],
                         ),
                         Spacer(),
-                        widget.login!['role'] == 'admin'
+                        widget.login['role'] == 'admin'
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -108,19 +109,13 @@ class userAndCustomersState extends State<userAndCustomers>
                                       )),
                                   IconButton(
                                       onPressed: () async {
-                                        int id = data[index]['id_user'] ??
-                                            data[index]['idPelanggan'];
-                                        String idColumn =
-                                            data[index]['id_user'] != null
-                                                ? "id_user"
-                                                : 'idPelanggan';
-                                        String table =
-                                            data[index]['id_user'] != null
-                                                ? "user"
-                                                : "pelanggan";
-                                        var result = await hapusUserCustomer(
-                                            id, idColumn, table, context);
-                                        if (result == 'success') {
+                                        var result;
+                                        if (data[index]['id_user']!=null) {
+                                          result = await hapusUser(data[index]['id_user'], context);
+                                        }else{
+                                          result= await hapusCustomer(data[index]['idPelanggan'], context);
+                                        }
+                                        if (result == true) {
                                           fetchUserCustomer();
                                         }
                                       },
@@ -167,12 +162,12 @@ class userAndCustomersState extends State<userAndCustomers>
         title: Text(
           'Users & Customers',
         ),
-        titleTextStyle: GoogleFonts.lato(fontSize: 30),
+        titleTextStyle: GoogleFonts.lato(fontSize: 30, color: Colors.white),
         // ),
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 160, 51, 250),
       ),
-      floatingActionButton: widget.login!['role'] == 'admin'
+      floatingActionButton: widget.login['role'] == 'admin'
           ? FloatingActionButton(
               onPressed: () {
                 showDialog(

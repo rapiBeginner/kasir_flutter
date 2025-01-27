@@ -12,7 +12,6 @@ hapusDialogue(Map data, BuildContext context) {
     }
     else{
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hapus data gagal'), backgroundColor: Colors.red,));
-
     }
 
   }
@@ -27,7 +26,7 @@ hapusDialogue(Map data, BuildContext context) {
             height: MediaQuery.of(context).size.height/6,
             width: MediaQuery.of(context).size.width/2,
             child: Center(
-              child: Text('Anda yakin menghapus data ini?', style: GoogleFonts.lato(fontSize: 25),),
+              child: Text('Anda yakin menghapus data produk ini?', style: GoogleFonts.lato(fontSize: 25),),
             ),
           ),
           actions: [ElevatedButton(onPressed: (){hapusData();
