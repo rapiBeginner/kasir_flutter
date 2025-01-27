@@ -191,26 +191,8 @@ class _TransactionState extends State<Transaction> {
                 leading: FaIcon(FontAwesomeIcons.dollarSign),
                 title: Text('Sales')),
 
-            // Menu Items
-            ListTile(
-              leading: const Icon(Icons.help),
-              title: const Text('Help'),
-              onTap: () {
-                // Navigator.push(
-                //   context,
-                //   // MaterialPageRoute(
-                //     // builder: (context) => ProfilePage(user: user),
-                //   // ),
-                // );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context); // Tutup Drawer
-              },
-            ),
+// Tutup Drawer
+            
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
@@ -249,7 +231,7 @@ class _TransactionState extends State<Transaction> {
         title: Text(
           'Product',
         ),
-        titleTextStyle: GoogleFonts.lato(fontSize: 30),
+        titleTextStyle: GoogleFonts.lato(fontSize: 30, color: Colors.white),
         // ),
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 160, 51, 250),

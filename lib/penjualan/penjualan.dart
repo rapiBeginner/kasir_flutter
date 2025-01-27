@@ -7,8 +7,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ukk_flutter/barang/editProduk.dart';
 import 'package:ukk_flutter/barang/transaksi.dart';
 import 'package:ukk_flutter/main.dart';
+import 'package:ukk_flutter/penjualan/createPenjualan.dart';
 import 'package:ukk_flutter/user/users.dart';
 
 class Penjualan extends StatefulWidget {
@@ -23,13 +25,19 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
   TabController? myTabControl;
   List penjualan = [];
   List detailPenjualan = [];
-  List produk=[];
-  List pengguna=[];
-
+  List produk = [];
+  List pelanggan = [];
 
   void fetchSales() async {
-    var myProduk= await Supabase.instance.client.from('produk');
-    
+    var myProduk = await Supabase.instance.client
+        .from('produk')
+        .select()
+        .order('id', ascending: true);
+    var myCustomer = await Supabase.instance.client
+        .from('pelanggan')
+        .select()
+        .order('idPelanggan', ascending: true);
+
     var responseSales = await Supabase.instance.client
         .from('penjualan')
         .select('*, pelanggan(*)');
@@ -40,6 +48,8 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
     setState(() {
       penjualan = responseSales;
       detailPenjualan = responseSalesDetail;
+      produk = myProduk;
+      pelanggan = myCustomer;
     });
   }
 
@@ -144,8 +154,7 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
                     SizedBox(
                       width: 10,
                     ),
-                    Text(detailPenjualan[index]['penjualan']['pelanggan']
-                                ['nama'] ==
+                    Text(detailPenjualan[index]['penjualan']['idPelanggan'] ==
                             null
                         ? 'Pelanggan tidak terdaftar'
                         : '${detailPenjualan[index]['penjualan']['pelanggan']['nama']} (${detailPenjualan[index]['penjualan']['pelanggan']['noTelp']})'),
@@ -307,6 +316,16 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
               ),
             )
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            var jual = await showDialogSales(produk, pelanggan, context);
+            if (jual == 'success') {
+              fetchSales();
+            }
+          },
+          child: Icon(Icons.add,color: Colors.white,),
+          backgroundColor: Color.fromARGB(255, 160, 51, 250),
         ));
   }
 }
