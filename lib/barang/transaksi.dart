@@ -96,10 +96,11 @@ class _TransactionState extends State<Transaction> {
               elevation: 10,
               child: LayoutBuilder(builder: (context, constraint) {
                 return Padding(
-                  padding: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.only(left: 15, top: 5, bottom: 5),
                   child: Row(children: [
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Text('$data')
                         Text('${data[index]["Nama"]}'),
@@ -125,7 +126,7 @@ class _TransactionState extends State<Transaction> {
                           IconButton(
                               onPressed: () async {
                                 var result =
-                                    await hapusDialogue(data[index], context);
+                                    await hapusDialogue(data[index]['id'], context);
                                 if (result == 'success') {
                                   fetchProduct();
                                 }

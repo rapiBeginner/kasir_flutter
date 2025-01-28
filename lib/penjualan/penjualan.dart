@@ -12,6 +12,7 @@ import 'package:ukk_flutter/barang/transaksi.dart';
 import 'package:ukk_flutter/main.dart';
 import 'package:ukk_flutter/penjualan/createPenjualan.dart';
 import 'package:ukk_flutter/penjualan/hapusPDetail.dart';
+import 'package:ukk_flutter/penjualan/hapusPenjualan.dart';
 import 'package:ukk_flutter/user/users.dart';
 
 class Penjualan extends StatefulWidget {
@@ -88,51 +89,71 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
               elevation: 15,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Row(
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.person,
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.person,
+                            ),
+                            SizedBox(
+                              width: 30,
+                            ),
+                            Text(penjualan[index]['idPelanggan'] == null
+                                ? 'Pelanggan tidak terdaftar'
+                                : '${penjualan[index]['pelanggan']['nama']} (${penjualan[index]['pelanggan']['noTelp']})')
+                          ],
                         ),
                         SizedBox(
-                          width: 30,
+                          height: 5,
                         ),
-                        Text(penjualan[index]['idPelanggan'] == null
-                            ? 'Pelanggan tidak terdaftar'
-                            : '${penjualan[index]['pelanggan']['nama']} (${penjualan[index]['pelanggan']['noTelp']})')
-                      ],
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.rupiahSign,
+                        Row(
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.rupiahSign,
+                            ),
+                            SizedBox(
+                              width: 30,
+                            ),
+                            Text('${penjualan[index]['TotalHarga']}')
+                          ],
                         ),
                         SizedBox(
-                          width: 30,
+                          height: 5,
                         ),
-                        Text('${penjualan[index]['TotalHarga']}')
+                        Row(
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.calendar,
+                            ),
+                            SizedBox(
+                              width: 30,
+                            ),
+                            Text('${tanggalPenjualan}')
+                          ],
+                        ),
                       ],
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Row(
+                    Spacer(),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          FontAwesomeIcons.calendar,
-                        ),
-                        SizedBox(
-                          width: 30,
-                        ),
-                        Text('${tanggalPenjualan}')
+                        IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+                        IconButton(
+                            onPressed: () async {
+                              var result = await hapusPenjualan(
+                                  penjualan[index]['idPenjualan'], context);
+                              if (result == true) {
+                                fetchSales();
+                              }
+                            },
+                            icon: Icon(Icons.delete)),
                       ],
-                    ),
+                    )
                   ],
                 ),
               ));
@@ -302,26 +323,7 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
                 leading: FaIcon(FontAwesomeIcons.cartShopping),
                 title: Text('Product')),
 
-            // Menu Items
-            ListTile(
-              leading: const Icon(Icons.help),
-              title: const Text('Help'),
-              onTap: () {
-                // Navigator.push(
-                //   context,
-                //   // MaterialPageRoute(
-                //     // builder: (context) => ProfilePage(user: user),
-                //   // ),
-                // );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context); // Tutup Drawer
-              },
-            ),
+        
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),

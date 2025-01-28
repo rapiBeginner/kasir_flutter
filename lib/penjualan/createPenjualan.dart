@@ -10,6 +10,7 @@
 
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -60,7 +61,6 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
             'subtotal': (selectedProduk[i]['subtotal'] as int)
           });
         }
-        ;
 
         var detail = await Supabase.instance.client
             .from('detailPenjualan')
@@ -87,6 +87,7 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
   // List<int>? jumlahBarang;
 
   addProductSales() {
+    produk = produk.where((item) => item['Stok'] > 1).toList();
     var produkController = SingleValueDropDownController();
     var jumlahController = TextEditingController();
     return showDialog(
@@ -95,48 +96,81 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
           return Form(
             key: formKeyProduk,
             child: AlertDialog(
+              backgroundColor: Color.fromARGB(255, 254, 253, 234),
               content: Container(
-                height: MediaQuery.of(context).size.height / 2,
-                width: MediaQuery.of(context).size.width / 1.1,
-                child: Column(
-                  children: [
-                    DropDownTextField(
-                      dropDownList: [
-                        ...List.generate(
-                            produk.where((item) => item['Stok'] >= 1).length,
-                            (index) {
-                          return DropDownValueModel(
-                              name:
-                                  '${produk[index]['Nama']}(Stok:${produk[index]['Stok']})',
-                              value: produk[index]);
-                        })
+                  height: MediaQuery.of(context).size.height / 3,
+                  width: MediaQuery.of(context).size.width / 1.1,
+                  child: LayoutBuilder(builder: (context, constraint) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: constraint.maxHeight / 4,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Color.fromARGB(255, 165, 33, 218),
+                              ),
+                              borderRadius: BorderRadius.circular(15)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Center(
+                              child: DropDownTextField(
+                                textFieldDecoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "Pilih Barang"),
+                                dropDownList: [
+                                  ...List.generate(produk.length, (index) {
+                                    return DropDownValueModel(
+                                        name:
+                                            '${produk[index]['Nama']}(Stok:${produk[index]['Stok']})',
+                                        value: produk[index]);
+                                  })
+                                ],
+                                controller: produkController,
+                                enableSearch: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Pilih barang yang dibeli';
+                                  }
+
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: constraint.maxHeight / 5,
+                        ),
+                        TextFormField(
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          decoration: InputDecoration(
+                            labelText: 'Jumlah beli',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide(
+                                      color:
+                                          Color.fromARGB(255, 165, 33, 218))),
+                              disabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide(
+                                      color:
+                                          Color.fromARGB(255, 165, 33, 218)))),
+                          controller: jumlahController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Jumlah barang yang dibeli tidak boleh kosong';
+                            } else if (int.parse(value) >
+                                produkController.dropDownValue!.value['Stok']) {
+                              return 'Jumlah yang dibeli melebihi stok yang tersedia';
+                            }
+
+                            return null;
+                          },
+                        )
                       ],
-                      controller: produkController,
-                      enableSearch: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Pilih barang yang dibeli';
-                        }
-
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: jumlahController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Jumlah barang yang dibeli tidak boleh kosong';
-                        } else if (int.parse(value) >
-                            produkController.dropDownValue!.value['Stok']) {
-                          return 'Jumlah yang dibeli melebihi stok yang tersedia';
-                        }
-
-                        return null;
-                      },
-                    )
-                  ],
-                ),
-              ),
+                    );
+                  })),
               actions: [
                 ElevatedButton(
                     onPressed: () {
@@ -172,7 +206,7 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
               title: Text('Penjualan'),
               titleTextStyle:
                   GoogleFonts.lato(fontSize: 20, color: Colors.white),
-              backgroundColor: Color.fromARGB(255, 164, 42, 215),
+              backgroundColor: Color.fromARGB(255, 177, 47, 233),
               content: Container(
                 decoration: BoxDecoration(
                   color: const Color.fromARGB(255, 249, 246, 222),
@@ -188,26 +222,49 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            DropDownTextField(
-                                enableSearch: true,
-                                controller: pelangganController,
-                                dropDownList: [
-                                  DropDownValueModel(
-                                      name: 'Pelanggan non member',
-                                      value: null),
-                                  ...List.generate(pelanggan.length, (index) {
-                                    return DropDownValueModel(
-                                        name:
-                                            '${pelanggan[index]['nama']} (${pelanggan[index]['noTelp']})',
-                                        value: pelanggan[index]['idPelanggan']);
-                                  })
-                                ]),
+                            Container(
+                              height: constraint.maxHeight / 4.5,
+                              width: constraint.maxWidth / 1.05,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Color.fromARGB(255, 177, 47, 233)),
+                                  borderRadius: BorderRadius.circular(15)),
+                              child: Center(
+                                child: DropDownTextField(
+                                    textFieldDecoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide.none,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15))),
+                                        hintText: 'Pilih pelanggan'),
+                                    enableSearch: true,
+                                    controller: pelangganController,
+                                    dropDownList: [
+                                      DropDownValueModel(
+                                          name: 'Pelanggan non member',
+                                          value: null),
+                                      ...List.generate(pelanggan.length,
+                                          (index) {
+                                        return DropDownValueModel(
+                                            name:
+                                                '${pelanggan[index]['nama']} (${pelanggan[index]['noTelp']})',
+                                            value: pelanggan[index]
+                                                ['idPelanggan']);
+                                      })
+                                    ]),
+                              ),
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height / 50,
+                            ),
                             Container(
                                 height: constraint.maxHeight / 2,
                                 width: constraint.maxWidth / 1.05,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(color: Colors.purple)),
+                                    border: Border.all(
+                                        color:
+                                            Color.fromARGB(255, 177, 47, 233))),
                                 child: selectedProduk.isNotEmpty
                                     ? ListView(
                                         children: [
@@ -263,8 +320,13 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
                                         ],
                                       )
                                     : Center(
+                                        child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
                                         child: Text(
-                                            'Tambahkan barang dan jumlah yang  dibeli')))
+                                          'Tambahkan barang dan jumlah yang  dibeli',
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )))
                           ],
                         );
                       })),

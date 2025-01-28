@@ -83,9 +83,10 @@ class _addCustomerState extends State<addCustomer> {
                             
                             style: GoogleFonts.lato(
                                 color: Colors.white,
-                                fontSize: MediaQuery.of(context).size.height / 22),
+                                fontSize: MediaQuery.of(context).size.width/ 13),
                           ),
-                          FaIcon(Icons.person_add_alt)
+                          SizedBox(width: 5,),
+                          FaIcon(Icons.person_add_alt, color: Colors.white,)
                         ],
                       ),
                       SizedBox(height: MediaQuery.of(context).size.height/35),

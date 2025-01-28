@@ -60,7 +60,7 @@ class userAndCustomersState extends State<userAndCustomers>
     generateCard(List data, IconData icon) {
       return GridView.count(
         padding: EdgeInsets.all(10),
-        childAspectRatio: 3,
+        childAspectRatio: 2.5,
         crossAxisCount: 1,
         children: [
           ...List.generate(data.length, (index) {
@@ -77,12 +77,17 @@ class userAndCustomersState extends State<userAndCustomers>
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Icon(icon),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(data[index]['nama']),
-                            Text(data[index]['email'] ?? data[index]['noTelp']),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.only(left: 5),
+                          child: Column(
+                            
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(data[index]['nama']),
+                              Text(data[index]['email'] ?? data[index]['noTelp']),
+                            ],
+                          ),
                         ),
                         Spacer(),
                         widget.login['role'] == 'admin'
@@ -263,26 +268,6 @@ class userAndCustomersState extends State<userAndCustomers>
               leading: FaIcon(FontAwesomeIcons.dollarSign),
               title: Text('Sales')),
 
-          // Menu Items
-          ListTile(
-            leading: const Icon(Icons.help),
-            title: const Text('Help'),
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   // MaterialPageRoute(
-              //     // builder: (context) => ProfilePage(user: user),
-              //   // ),
-              // );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () {
-              Navigator.pop(context); // Tutup Drawer
-            },
-          ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),

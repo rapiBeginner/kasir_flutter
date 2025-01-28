@@ -85,9 +85,10 @@ class _addProductState extends State<addProduct> {
                             
                             style: GoogleFonts.lato(
                                 color: Colors.white,
-                                fontSize: MediaQuery.of(context).size.height / 20),
+                                fontSize: MediaQuery.of(context).size.width/ 13),
                           ),
-                          FaIcon(FontAwesomeIcons.cartPlus)
+                          SizedBox(width: 5,),
+                          FaIcon(FontAwesomeIcons.cartPlus,color: Colors.white,)
                         ],
                       ),
                       SizedBox(height: MediaQuery.of(context).size.height/35),
