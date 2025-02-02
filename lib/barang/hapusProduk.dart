@@ -48,7 +48,7 @@ hapusDialogue(int id, BuildContext context) {
             width: MediaQuery.of(context).size.width / 1.5,
             child: Center(
               child: Text(
-                'Anda yakin menghapus data produk ini?\n Semua data detail penjualan yang terkait dengan produk ini juga akan dihapusF',
+                'Anda yakin menghapus data produk ini?\n Semua data detail penjualan yang terkait dengan produk ini juga akan dihapus.',
                 style: GoogleFonts.lato(fontSize: 15),
               ),
             ),

@@ -176,10 +176,10 @@ showDialogSales(List produk, List pelanggan, BuildContext context) {
                     onPressed: () {
                       if (formKeyProduk.currentState!.validate()) {
                         produkController.dropDownValue!.value['jumlahProduk'] =
-                            int.parse(jumlahController.text);
+                            int.parse(jumlahController.text.trim());
                         produkController.dropDownValue!.value['subtotal'] =
                             produkController.dropDownValue!.value['Harga'] *
-                                int.parse(jumlahController.text);
+                                int.parse(jumlahController.text.trim());
                         totalHarga += (produkController
                             .dropDownValue!.value['subtotal'] as int);
                         Navigator.pop(

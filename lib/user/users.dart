@@ -3,7 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ukk_flutter/barang/transaksi.dart';
+import 'package:ukk_flutter/barang/produk.dart';
 import 'package:ukk_flutter/main.dart';
 import 'package:ukk_flutter/penjualan/penjualan.dart';
 import 'package:ukk_flutter/user/createCustomer.dart';

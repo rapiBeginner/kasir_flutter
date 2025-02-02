@@ -12,24 +12,39 @@ editDialogueCustomer(BuildContext context, Map data) {
 
   void EditCustomer() async {
     if (formKey.currentState!.validate()) {
-      var response = await Supabase.instance.client.from('pelanggan').update({
-        'nama': namaController.text,
-        'noTelp': noTelpController.text,
-        'alamat': alamatController.text,
-      }).eq('idPelanggan', data['idPelanggan']);
-
-      if (response == null) {
+      var checkPhoneNumber = await Supabase.instance.client
+          .from('user')
+          .select()
+          .eq('noTelp', noTelpController.text.replaceAll(" ", ""));
+      if (checkPhoneNumber.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Data berhasil di ubah'),
-          backgroundColor: Colors.green,
-        ));
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Transaction()));
-        Navigator.pop(context, 'success');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Edit data gagal'),
+          content: Text(
+            'Nama produk sudah digunakan',
+            style: GoogleFonts.lato(color: Colors.white),
+          ),
           backgroundColor: Colors.red,
+          duration: Duration(milliseconds: 1500),
         ));
+      } else {
+        var response = await Supabase.instance.client.from('pelanggan').update({
+          'nama': namaController.text.trim(),
+          'noTelp': noTelpController.text.trim(),
+          'alamat': alamatController.text.trim(),
+        }).eq('idPelanggan', data['idPelanggan']);
+
+        if (response == null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Data berhasil di ubah'),
+            backgroundColor: Colors.green,
+          ));
+          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Transaction()));
+          Navigator.pop(context, 'success');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Edit data gagal'),
+            backgroundColor: Colors.red,
+          ));
+        }
       }
     }
   }
@@ -133,7 +148,9 @@ editDialogueCustomer(BuildContext context, Map data) {
                                   return null;
                                 },
                                 keyboardType: TextInputType.phone,
-                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
                                     labelText: 'Nomor telepon'),

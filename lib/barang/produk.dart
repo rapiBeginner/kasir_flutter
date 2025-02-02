@@ -22,9 +22,13 @@ class _TransactionState extends State<Transaction> {
   final _pageControl = PageController();
   var response;
   List produk = [];
+  List afterSearchProduct = [];
   int selectedIndex = 0;
   var slidingBarKey;
-
+  dynamic title = Text(
+    'Product',
+  );
+  TextEditingController searchController = TextEditingController();
   var jenis = [
     null,
     'makanan',
@@ -44,7 +48,40 @@ class _TransactionState extends State<Transaction> {
         .order('id', ascending: true);
 
     setState(() {
-      produk = response;
+      afterSearchProduct = response;
+    });
+  }
+
+  searchProduct() {
+    produk = afterSearchProduct;
+    setState(() {
+      title = TextField(
+        onChanged: (value) {
+          setState(() {
+            if (value.isNotEmpty) {
+              afterSearchProduct = produk
+                  .where((item) => item['Nama']
+                      .toString()
+                      .toLowerCase()
+                      .contains(value.toLowerCase()))
+                  .toList();
+            } else {
+              afterSearchProduct = produk;
+            }
+          });
+        },
+        controller: searchController,
+        decoration: InputDecoration(
+          suffixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.close)),
+          hintText: 'Cari barang',
+          filled: true,
+          fillColor: Colors.transparent,
+          hintStyle: GoogleFonts.lato(color: Colors.white),
+          enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white, width: 2),
+              borderRadius: BorderRadius.circular(50)),
+        ),
+      );
     });
   }
 
@@ -61,9 +98,11 @@ class _TransactionState extends State<Transaction> {
       List data;
 
       if (filter == null) {
-        data = produk;
+        data = afterSearchProduct;
       } else {
-        data = produk.where((item) => item["jenis"] == filter).toList();
+        data = afterSearchProduct
+            .where((item) => item["jenis"] == filter)
+            .toList();
       }
 
       return GridView.count(
@@ -125,8 +164,8 @@ class _TransactionState extends State<Transaction> {
                               icon: Icon(Icons.edit)),
                           IconButton(
                               onPressed: () async {
-                                var result =
-                                    await hapusDialogue(data[index]['id'], context);
+                                var result = await hapusDialogue(
+                                    data[index]['id'], context);
                                 if (result == 'success') {
                                   fetchProduct();
                                 }
@@ -193,7 +232,7 @@ class _TransactionState extends State<Transaction> {
                 title: Text('Sales')),
 
 // Tutup Drawer
-            
+
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
@@ -207,6 +246,19 @@ class _TransactionState extends State<Transaction> {
         ),
       ),
       appBar: AppBar(
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: kToolbarHeight / 4),
+            child: IconButton(
+                onPressed: () {
+                  searchProduct();
+                },
+                icon: Icon(
+                  Icons.search,
+                  size: kToolbarHeight / 1.7,
+                )),
+          )
+        ],
         centerTitle: true,
         // title: Container(
         //   padding: const EdgeInsets.only(right: 5),
@@ -229,9 +281,7 @@ class _TransactionState extends State<Transaction> {
         //         contentPadding: const EdgeInsets.symmetric(vertical: 10)),
         //   ),
         // ),
-        title: Text(
-          'Product',
-        ),
+        title: title,
         titleTextStyle: GoogleFonts.lato(fontSize: 30, color: Colors.white),
         // ),
         foregroundColor: Colors.white,

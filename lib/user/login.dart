@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ukk_flutter/barang/transaksi.dart';
+import 'package:ukk_flutter/barang/produk.dart';
+import 'package:ukk_flutter/penjualan/penjualan.dart';
 
 LoginFunction(String email, String password, BuildContext context) async {
   try {
@@ -12,7 +13,7 @@ LoginFunction(String email, String password, BuildContext context) async {
         .single();
 
     Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (context) => Transaction(user: response,)));
+        MaterialPageRoute(builder: (context) => Penjualan(login: response)));
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Email atau password salah'),

@@ -12,24 +12,39 @@ editDialogueUser(BuildContext context, Map data) {
 
   void EditUser() async {
     if (formKey.currentState!.validate()) {
-      var response = await Supabase.instance.client.from('user').update({
-        'nama': namaController.text,
-        'password': passwordController.text,
-        'email': emailController.text,
-      }).eq('id_user', data['id_user']);
-
-      if (response == null) {
+      var checkEmail = await Supabase.instance.client
+          .from('user')
+          .select()
+          .eq('email', emailController.text.trim());
+      if (checkEmail.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Data berhasil di ubah'),
-          backgroundColor: Colors.green,
-        ));
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Transaction()));
-        Navigator.pop(context, 'success');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Edit data gagal'),
+          content: Text(
+            'Email sudah digunakan',
+            style: GoogleFonts.lato(color: Colors.white),
+          ),
           backgroundColor: Colors.red,
+          duration: Duration(milliseconds: 1500),
         ));
+      } else {
+        var response = await Supabase.instance.client.from('user').update({
+          'nama': namaController.text.trim(),
+          'password': passwordController.text.trim(),
+          'email': emailController.text.trim(),
+        }).eq('id_user', data['id_user']);
+
+        if (response == null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Data berhasil di ubah'),
+            backgroundColor: Colors.green,
+          ));
+          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Transaction()));
+          Navigator.pop(context, 'success');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Edit data gagal'),
+            backgroundColor: Colors.red,
+          ));
+        }
       }
     }
   }
@@ -109,7 +124,9 @@ editDialogueUser(BuildContext context, Map data) {
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Email wajib di isi';
-                                  }else if(!value.toString().endsWith('@gmail.com')){
+                                  } else if (!value
+                                      .toString()
+                                      .endsWith('@gmail.com')) {
                                     return 'Format email tidak valid';
                                   }
 

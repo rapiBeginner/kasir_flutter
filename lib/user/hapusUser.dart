@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ukk_flutter/barang/transaksi.dart';
+import 'package:ukk_flutter/barang/produk.dart';
 
 hapusUser(
     int idData,BuildContext context) {

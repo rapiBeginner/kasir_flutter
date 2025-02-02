@@ -1,5 +1,4 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
-import 'transaksi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,32 +8,47 @@ editDialogue(BuildContext context, Map data) {
   var namaController = TextEditingController(text: data['Nama']);
   var hargaController = TextEditingController(text: '${data['Harga']}');
   var stokController = TextEditingController(text: '${data['Stok']}');
-  var jenisController = SingleValueDropDownController(data: DropDownValueModel(name: data['jenis'], value: data['jenis']));
+  var jenisController = SingleValueDropDownController(
+      data: DropDownValueModel(name: data['jenis'], value: data['jenis']));
   var formKey = GlobalKey<FormState>();
 
   void EditProduct() async {
-    if(formKey.currentState!.validate()){
-     var test= await Supabase.instance.client
-        .from('penjualan')
-        .select('*, pelanggan(*)');
-    print(test);
-      var response = await Supabase.instance.client.from('produk').update({
-      'Nama': namaController.text,
-      'Stok': stokController.text,
-      'Harga': hargaController.text,
-      'jenis': jenisController.dropDownValue!.value,
-    }).eq('id', data['id']);
+    if (formKey.currentState!.validate()) {
+      var checkNames = await Supabase.instance.client
+          .from('produk')
+          .select()
+          .eq('Nama', namaController.text.trim());
+      if (checkNames.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'Nama produk sudah digunakan',
+            style: GoogleFonts.lato(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: Duration(milliseconds: 1500),
+        ));
+      } else {
+        var response = await Supabase.instance.client.from('produk').update({
+          'Nama': namaController.text.trim(),
+          'Stok': stokController.text.trim(),
+          'Harga': hargaController.text.trim(),
+          'jenis': jenisController.dropDownValue!.value,
+        }).eq('id', data['id']);
 
-    if (response == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Data berhasil di ubah'),
-        backgroundColor: Colors.green,
-      ));
-      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Transaction()));
-      Navigator.pop(context, 'success');
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Edit data gagal'), backgroundColor: Colors.red,));
-    }
+        if (response == null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Data berhasil di ubah'),
+            backgroundColor: Colors.green,
+          ));
+          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Transaction()));
+          Navigator.pop(context, 'success');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Edit data gagal'),
+            backgroundColor: Colors.red,
+          ));
+        }
+      }
     }
   }
 
@@ -97,7 +111,6 @@ editDialogue(BuildContext context, Map data) {
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
                                     labelText: 'Nama produk'),
-              
                               ),
                             ),
                           ),
@@ -126,7 +139,6 @@ editDialogue(BuildContext context, Map data) {
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
                                     labelText: 'Harga'),
-                              
                               ),
                             ),
                           ),
@@ -154,7 +166,6 @@ editDialogue(BuildContext context, Map data) {
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
                                     labelText: 'Stok'),
-                                
                               ),
                             ),
                           ),
@@ -184,7 +195,6 @@ editDialogue(BuildContext context, Map data) {
                                 textFieldDecoration: InputDecoration(
                                     border: InputBorder.none,
                                     labelText: 'Jenis'),
-                              
                               ),
                             ),
                           ),

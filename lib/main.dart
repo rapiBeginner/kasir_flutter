@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_file.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ukk_flutter/barang/transaksi.dart';
+import 'package:ukk_flutter/barang/produk.dart';
 import 'package:ukk_flutter/user/login.dart';
 
 void main() async {
@@ -223,8 +223,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               ElevatedButton(
                                 onPressed: () {
                                   if (formKey.currentState!.validate()) {
-                                    LoginFunction(emailController.text,
-                                        pwController.text, context);
+                                    LoginFunction(emailController.text.trim(),
+                                        pwController.text.trim(), context);
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -247,32 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               SizedBox(
                                 height: MediaQuery.of(context).size.height / 30,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Dont have an acount yet?',
-                                    style: GoogleFonts.lato(
-                                        fontSize:
-                                            MediaQuery.of(context).size.height /
-                                                58),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {},
-                                    child: Text(
-                                      'Register here',
-                                      style: GoogleFonts.lato(
-                                          decorationColor: const Color.fromARGB(
-                                              255, 189, 114, 251),
-                                          decoration: TextDecoration.underline,
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .height /
-                                              58),
-                                    ),
-                                  )
-                                ],
-                              )
+                              
                             ],
                           ),
                         ),
