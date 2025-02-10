@@ -24,6 +24,7 @@ class Penjualan extends StatefulWidget {
 }
 
 class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
+  dynamic barTitle = Text('Sales');
   TabController? myTabControl;
   List penjualan = [];
   List detailPenjualan = [];
@@ -75,6 +76,58 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
     // TODO: implement dispose
     super.dispose();
     myTabControl?.dispose();
+  }
+
+    searchPelanggan() {
+    // produk = afterSearchProduct;
+    setState(() {
+      barTitle = SizedBox(
+        height: kToolbarHeight/1.5,
+        child: TextField(
+          style: GoogleFonts.lato(color: Colors.white),
+          onChanged: (value) {
+            setState(() {
+              if (value.isNotEmpty) {
+                // afterSearchProduct = produk
+              //       .where((item) => item['Nama']
+              //           .toString()
+              //           .toLowerCase()
+              //           .contains(value.toLowerCase()))
+              //       .toList();
+              // } else {
+              //   afterSearchProduct = produk;
+              //
+              }
+            });
+          },
+          // controller: searchController,
+          decoration: InputDecoration(
+            suffixIcon: IconButton(
+              color: Colors.white,
+                onPressed: () {
+                  // setState(() {
+                  //   searchController.text='';
+                  //   afterSearchProduct = produk;
+                  //   title = Text(
+                  //     'Product',
+                  //   );
+                  // });
+                },
+                icon: Icon(Icons.close)),
+            labelText: 'Cari barang',
+            filled: true,
+            fillColor: Colors.transparent,
+            labelStyle: GoogleFonts.lato(color: Colors.white),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50)),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50)),
+          ),
+        ),
+      );
+    });
   }
 
   generateSales() {
@@ -343,15 +396,64 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         appBar: AppBar(
           // ),
+          
           centerTitle: true,
-          title: Text('Sales'),
+          titleTextStyle: GoogleFonts.lato(fontSize: kToolbarHeight / 2, color: Colors.white),
+          title: barTitle,
           foregroundColor: Colors.white,
           backgroundColor: const Color.fromARGB(255, 160, 51, 250),
+        //   actions: [
+        //     SizedBox(
+        //       height: kToolbarHeight / 1.5,
+        //       child: TextField(
+        //         style: GoogleFonts.lato(color: Colors.white),
+        //         onChanged: (value) {
+        //           setState(() {
+        //             // if (value.isNotEmpty) {
+        //             //   // afterSearchProduct = produk
+        //             //       .where((item) => item['Nama']
+        //             //           .toString()
+        //             //           .toLowerCase()
+        //             //           .contains(value.toLowerCase()))
+        //             //       .toList();
+        //             // } else {
+        //             //   afterSearchProduct = produk;
+        //             // }
+        //           });
+        //         },
+        //         // controller: searchController,
+        //         decoration: InputDecoration(
+        //           suffixIcon: IconButton(
+        //               color: Colors.white,
+        //               onPressed: () {
+        //                 // setState(() {
+        //                 //   searchController.text='';
+        //                 //   afterSearchProduct = produk;
+        //                 //   title = Text(
+        //                 //     'Product',
+        //                 //   );
+        //                 // });
+        //               },
+        //               icon: Icon(Icons.close)),
+        //           labelText: 'Cari barang',
+        //           filled: true,
+        //           fillColor: Colors.transparent,
+        //           labelStyle: GoogleFonts.lato(color: Colors.white),
+        //           enabledBorder: OutlineInputBorder(
+        //               borderSide: BorderSide(color: Colors.white, width: 2),
+        //               borderRadius: BorderRadius.circular(50)),
+        //           focusedBorder: OutlineInputBorder(
+        //               borderSide: BorderSide(color: Colors.white, width: 2),
+        //               borderRadius: BorderRadius.circular(50)),
+        //         ),
+        //       ),
+        //     )
+        //   ],
         ),
+        
         drawer: Drawer(
             child: ListView(
           padding: EdgeInsets.zero,
@@ -429,14 +531,14 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
         //           //     ? Center(
         //           //         child: CircularProgressIndicator(),
         //           //       )
-        //           // : generateSalesDetail()
+        //           // : generateSalesDetail() 
         //         ],
         //         controller: myTabControl,
         //       ),
         //     )
         //   ],
         // ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: widget.login['role']=='petugas'?FloatingActionButton(
           onPressed: () async {
             var jual = await showDialogSales(produk, pelanggan, context);
             if (jual == 'success') {
@@ -448,6 +550,7 @@ class _PenjualanState extends State<Penjualan> with TickerProviderStateMixin {
             color: Colors.white,
           ),
           backgroundColor: Color.fromARGB(255, 160, 51, 250),
-        ));
+        ):null
+        );
   }
 }

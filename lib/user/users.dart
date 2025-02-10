@@ -24,7 +24,16 @@ class userAndCustomersState extends State<userAndCustomers>
     with TickerProviderStateMixin {
   var user;
   var customer;
+  var filterUser;
+  var searchCustomer;
+  dynamic barTitle = Text(
+    'Users & Customers',
+  );
   TabController? myTabControl;
+  bool? searchActive = false;
+  TextEditingController userSearchCtrl = TextEditingController();
+  TextEditingController customerSearchCtrl = TextEditingController();
+
   fetchUserCustomer() async {
     var responseUser = await Supabase.instance.client
         .from('user')
@@ -42,7 +51,7 @@ class userAndCustomersState extends State<userAndCustomers>
 
   @override
   void initState() {
-    // TODO: implement initState
+    //
     super.initState();
     fetchUserCustomer();
     myTabControl = TabController(length: 2, vsync: this);
@@ -50,9 +59,140 @@ class userAndCustomersState extends State<userAndCustomers>
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    //
     super.dispose();
     myTabControl?.dispose();
+  }
+
+  void popUpSearch() {
+    if (myTabControl!.index == 0) {
+      userSearchCtrl.clear();
+      searchUser();
+      setState(() {
+        customer = searchCustomer;
+      });
+    } else {
+      customerSearchCtrl.clear();
+      searchPelanggan();
+      setState(() {
+        user = filterUser;
+      });
+    }
+  }
+
+  searchUser() {
+    filterUser = user;
+    setState(() {
+      barTitle = SizedBox(
+        height: kToolbarHeight / 1.5,
+        child: TextField(
+          controller: userSearchCtrl,
+          style: GoogleFonts.lato(color: Colors.white),
+          onChanged: (value) {
+            setState(() {
+              if (value.isNotEmpty) {
+                setState(() {
+                  user = filterUser!.where((item) {
+                    return item["email"]
+                            .toString()
+                            .toLowerCase()
+                            .startsWith(value.toLowerCase()) ||
+                        item["nama"]
+                            .toString()
+                            .toLowerCase()
+                            .startsWith(value.toLowerCase());
+                  }).toList();
+                });
+              } else {
+                user = filterUser;
+              }
+            });
+          },
+          cursorColor: Colors.white,
+          decoration: InputDecoration(
+            suffixIcon: IconButton(
+                color: Colors.white,
+                onPressed: () {
+                  setState(() {
+                    barTitle = Text('User & customer');
+                  });
+                  myTabControl!.removeListener(popUpSearch);
+                  userSearchCtrl.clear();
+                  setState(() {
+                    user = filterUser;
+                  });
+                },
+                icon: Icon(Icons.close)),
+            labelText: 'Cari Pengguna',
+            filled: true,
+            fillColor: Colors.transparent,
+            labelStyle: GoogleFonts.lato(color: Colors.white),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50)),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50)),
+          ),
+        ),
+      );
+    });
+  }
+
+  searchPelanggan() {
+    searchCustomer = customer;
+    setState(() {
+      barTitle = SizedBox(
+        height: kToolbarHeight / 1.5,
+        child: TextField(
+          controller: customerSearchCtrl,
+          cursorColor: Colors.white,
+          style: GoogleFonts.lato(color: Colors.white),
+          onChanged: (value) {
+            setState(() {
+              if (value.isNotEmpty) {
+                customer = searchCustomer!.where((item) {
+                  return item["nama"]
+                          .toString()
+                          .toLowerCase()
+                          .startsWith(value.toLowerCase()) ||
+                      item["alamat"]
+                          .toString()
+                          .toLowerCase()
+                          .contains(value.toLowerCase()) ||
+                      item["noTelp"].toString().contains(value);
+                }).toList();
+              }else{
+                customer=searchCustomer;
+              }
+            });
+          },
+          decoration: InputDecoration(
+            suffixIcon: IconButton(
+                color: Colors.white,
+                onPressed: () {
+                  setState(() {
+                    barTitle = Text('User & customer');
+                    customer=searchCustomer;
+                  });
+                  myTabControl!.removeListener(popUpSearch);
+                  customerSearchCtrl.clear();
+                },
+                icon: Icon(Icons.close)),
+            labelText: 'Cari Pelanggan',
+            filled: true,
+            fillColor: Colors.transparent,
+            labelStyle: GoogleFonts.lato(color: Colors.white),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50)),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50)),
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -80,12 +220,12 @@ class userAndCustomersState extends State<userAndCustomers>
                         Padding(
                           padding: const EdgeInsets.only(left: 5),
                           child: Column(
-                            
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(data[index]['nama']),
-                              Text(data[index]['email'] ?? data[index]['noTelp']),
+                              Text(data[index]['email'] ??
+                                  data[index]['noTelp']),
                             ],
                           ),
                         ),
@@ -115,10 +255,13 @@ class userAndCustomersState extends State<userAndCustomers>
                                   IconButton(
                                       onPressed: () async {
                                         var result;
-                                        if (data[index]['id_user']!=null) {
-                                          result = await hapusUser(data[index]['id_user'], context);
-                                        }else{
-                                          result= await hapusCustomer(data[index]['idPelanggan'], context);
+                                        if (data[index]['id_user'] != null) {
+                                          result = await hapusUser(
+                                              data[index]['id_user'], context);
+                                        } else {
+                                          result = await hapusCustomer(
+                                              data[index]['idPelanggan'],
+                                              context);
                                         }
                                         if (result == true) {
                                           fetchUserCustomer();
@@ -143,34 +286,19 @@ class userAndCustomersState extends State<userAndCustomers>
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        // title: Container(
-        //   padding: const EdgeInsets.only(right: 5),
-        //   height: kToolbarHeight / 1.4,
-        //   width: MediaQuery.of(context).size.width / 2.5,
-        //   decoration: BoxDecoration(
-        //       borderRadius: const BorderRadius.all(Radius.circular(25)),
-        //       border: Border.all(width: 2, color: Colors.white)),
-        //   child: TextField(
-        //     style: GoogleFonts.inter(color: Colors.white),
-        //     cursorColor: Colors.white,
-        //     decoration: InputDecoration(
-        //         hintText: 'Cari barang',
-        //         hintStyle: GoogleFonts.inter(color: Colors.white),
-        //         border: const OutlineInputBorder(borderSide: BorderSide.none),
-        //         prefixIcon: const Icon(
-        //           Icons.search,
-        //           color: Colors.white,
-        //         ),
-        //         contentPadding: const EdgeInsets.symmetric(vertical: 10)),
-        //   ),
-        // ),
-        title: Text(
-          'Users & Customers',
-        ),
-        titleTextStyle: GoogleFonts.lato(fontSize: 30, color: Colors.white),
-        // ),
+        title: barTitle,
+        titleTextStyle:
+            GoogleFonts.lato(fontSize: kToolbarHeight / 2, color: Colors.white),
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 160, 51, 250),
+        actions: [
+          IconButton(
+              onPressed: () {
+                myTabControl!.index == 0 ? searchUser() : searchPelanggan();
+                myTabControl!.addListener(popUpSearch);
+              },
+              icon: Icon(Icons.search))
+        ],
       ),
       floatingActionButton: widget.login['role'] == 'admin'
           ? FloatingActionButton(
@@ -267,7 +395,6 @@ class userAndCustomersState extends State<userAndCustomers>
               },
               leading: FaIcon(FontAwesomeIcons.dollarSign),
               title: Text('Sales')),
-
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
@@ -303,10 +430,13 @@ class userAndCustomersState extends State<userAndCustomers>
                       controller: myTabControl,
                     )),
                 Expanded(
-                  child: TabBarView(controller: myTabControl, children: [
-                    generateCard(user, Icons.person_2),
-                    generateCard(customer, Icons.person_4)
-                  ]),
+                  child: TabBarView(
+                    controller: myTabControl,
+                    children: [
+                      generateCard(user, Icons.person_2),
+                      generateCard(customer, Icons.person_4),
+                    ],
+                  ),
                 )
               ],
             ),

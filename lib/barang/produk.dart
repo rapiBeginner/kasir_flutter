@@ -55,31 +55,58 @@ class _TransactionState extends State<Transaction> {
   searchProduct() {
     produk = afterSearchProduct;
     setState(() {
-      title = TextField(
-        onChanged: (value) {
-          setState(() {
-            if (value.isNotEmpty) {
-              afterSearchProduct = produk
-                  .where((item) => item['Nama']
-                      .toString()
-                      .toLowerCase()
-                      .contains(value.toLowerCase()))
-                  .toList();
-            } else {
-              afterSearchProduct = produk;
-            }
-          });
-        },
-        controller: searchController,
-        decoration: InputDecoration(
-          suffixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.close)),
-          hintText: 'Cari barang',
-          filled: true,
-          fillColor: Colors.transparent,
-          hintStyle: GoogleFonts.lato(color: Colors.white),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white, width: 2),
-              borderRadius: BorderRadius.circular(50)),
+      title = SizedBox(
+        height: kToolbarHeight / 1.5,
+        child: TextField(
+          style: GoogleFonts.lato(color: Colors.white),
+          onChanged: (value) {
+            setState(() {
+              if (value.isNotEmpty) {
+                afterSearchProduct = produk
+                    .where((item) =>
+                        item['Nama']
+                            .toString()
+                            .toLowerCase()
+                            .startsWith(value.toLowerCase()) ||
+                        item['Harga']
+                            .toString()
+                            .toLowerCase()
+                            .contains(searchController.text.toLowerCase()) ||
+                        item['Stok']
+                            .toString()
+                            .toLowerCase()
+                            .contains(searchController.text.toLowerCase()))
+                    .toList();
+              } else {
+                afterSearchProduct = produk;
+              }
+            });
+          },
+          controller: searchController,
+          decoration: InputDecoration(
+            suffixIcon: IconButton(
+                color: Colors.white,
+                onPressed: () {
+                  setState(() {
+                    searchController.text = '';
+                    afterSearchProduct = produk;
+                    title = Text(
+                      'Product',
+                    );
+                  });
+                },
+                icon: Icon(Icons.close)),
+            labelText: 'Cari barang',
+            filled: true,
+            fillColor: Colors.transparent,
+            labelStyle: GoogleFonts.lato(color: Colors.white),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50)),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50)),
+          ),
         ),
       );
     });
@@ -282,7 +309,8 @@ class _TransactionState extends State<Transaction> {
         //   ),
         // ),
         title: title,
-        titleTextStyle: GoogleFonts.lato(fontSize: 30, color: Colors.white),
+        titleTextStyle:
+            GoogleFonts.lato(fontSize: kToolbarHeight / 2, color: Colors.white),
         // ),
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 160, 51, 250),
